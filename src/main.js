@@ -5,6 +5,7 @@ import { createPinia } from 'pinia' // 引入Pinia
 import ElementPlus from 'element-plus' // 引入Element Plus
 import 'element-plus/dist/index.css' // Element Plus样式
 import * as Icons from '@element-plus/icons-vue' // 引入所有图标
+import 'element-plus/theme-chalk/dark/css-vars.css'
 
 // 1. 创建Pinia实例
 const pinia = createPinia()

@@ -7,7 +7,7 @@
       <el-tag
         v-for="tag in allTags"
         :key="tag"
-        :type="activeTag === tag ? 'primary' : ''"
+        :type="activeTag === tag ? 'primary' : 'info'"
         @click="handleTagClick(tag)"
         class="filter-tag"
       >
