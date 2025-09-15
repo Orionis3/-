@@ -22,6 +22,7 @@ onMounted(() => {
 })
 </script>
 
+<!-- src/App.vue -->
 <style>
 /* 全局样式重置 */
 * {
@@ -30,11 +31,18 @@ onMounted(() => {
   box-sizing: border-box;
 }
 
-/* 深色模式全局样式 */
-.dark {
-  --el-bg-color: #121212;
-  --el-text-color-primary: #ffffff;
-  --el-border-color: #333333;
+/* 浅色模式：默认背景 */
+html,
+body {
+  background-color: #ffffff; /* 浅色背景 */
+  color: #333333; /* 浅色文本 */
+}
+
+/* 深色模式：全局背景变黑 */
+.dark html,
+.dark body {
+  background-color: #121212; /* 深色背景（覆盖浏览器默认） */
+  color: #ffffff; /* 深色文本 */
 }
 
 /* 平滑滚动 */

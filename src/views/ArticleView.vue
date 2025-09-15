@@ -47,7 +47,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useDataStore } from '@/stores/useDataStore'
-import { Calendar, Tag, ArrowLeft } from '@element-plus/icons-vue'
+import { Calendar, ArrowLeft } from '@element-plus/icons-vue'
 
 import { marked } from 'marked'
 import hljs from 'highlight.js'
