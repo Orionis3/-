@@ -1,26 +1,43 @@
 export default {
   // 基础信息
-  avatar: '/src/assets/images/avatar.jpg', // 头像路径（后续将图片放入assets/images）
-  name: '你的昵称',
-  intro: '前端开发工程师 | 旅行爱好者 | 每周更新1篇技术笔记',
+  avatar: '../assets/images/avatar.jpg', // 确保该路径下存在头像图片
+  name: '张明',
+  intro: '资深前端开发工程师 | 技术博主 | 热爱探索新技术',
 
   // 个人经历
   experience: [
-    { period: '2023-至今', title: '某科技公司 | 前端开发', desc: '负责Vue3项目开发与优化' },
-    { period: '2019-2023', title: '某大学 | 计算机科学与技术', desc: '本科' }
+    {
+      period: '2023-至今',
+      title: '字节跳动 | 高级前端开发',
+      desc: '负责企业级中台Vue3项目架构设计与性能优化，主导组件库开发'
+    },
+    {
+      period: '2020-2023',
+      title: '腾讯科技 | 前端开发',
+      desc: '参与微信生态相关H5应用开发，优化首屏加载速度30%+'
+    },
+    { period: '2016-2020', title: '浙江大学 | 计算机科学与技术', desc: '本科，获校级优秀毕业生' }
   ],
 
   // 擅长领域
-  skills: ['Vue3', 'Pinia', 'Element Plus', 'Node.js', '前端工程化'],
+  skills: [
+    'Vue3/React',
+    'Pinia/Redux',
+    'Element Plus/Ant Design',
+    'Node.js',
+    'Webpack/Vite',
+    'TypeScript',
+    '小程序开发'
+  ],
 
   // 联系方式
   contact: {
-    github: 'https://github.com/你的账号',
-    email: 'your@email.com',
-    wechat: '你的公众号名称',
-    blog: 'https://你的博客地址'
+    github: 'https://github.com/zhangming',
+    email: 'zhangming@example.com',
+    wechat: '前端技术圈',
+    blog: 'https://blog.zhangming.com'
   },
 
   // 兴趣爱好
-  hobbies: ['读书', '徒步旅行', '摄影', '写技术博客']
+  hobbies: ['技术分享', '马拉松', '天文摄影', '开源贡献']
 }

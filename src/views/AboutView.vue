@@ -51,7 +51,7 @@
         <!-- 兴趣爱好 -->
         <div class="section">
           <h2>
-            <el-icon><Heart /></el-icon> 兴趣爱好
+            <el-icon><Headset /></el-icon> 兴趣爱好
           </h2>
           <p>{{ profile.hobbies.join(' · ') }}</p>
         </div>
@@ -63,8 +63,8 @@
 <script setup>
 import { computed } from 'vue'
 import { useDataStore } from '@/stores/useDataStore'
-import { Github, Message, Link } from '@element-plus/icons-vue'
-// import { Briefcase, Star, Heart, Github, Message, Link } from '@element-plus/icons-vue'
+
+import { Briefcase, Star, Headset, Github } from '@element-plus/icons-vue'
 
 // 获取个人信息
 const dataStore = useDataStore()
