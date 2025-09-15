@@ -9,7 +9,7 @@
           <h1>{{ profile.name }}</h1>
           <p class="intro">{{ profile.intro }}</p>
           <div class="contact-links">
-            <el-link :href="profile.contact.github" target="_blank" icon="Github" />
+            <el-link :href="profile.contact.github" target="_blank" :icon="Github" />
             <el-link :href="`mailto:${profile.contact.email}`" icon="Message" />
             <el-link :href="profile.contact.blog" target="_blank" icon="Link" />
           </div>
@@ -63,6 +63,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useDataStore } from '@/stores/useDataStore'
+import { Github, Message, Link } from '@element-plus/icons-vue'
 // import { Briefcase, Star, Heart, Github, Message, Link } from '@element-plus/icons-vue'
 
 // 获取个人信息
