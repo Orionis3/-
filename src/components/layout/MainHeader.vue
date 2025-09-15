@@ -7,7 +7,7 @@
         <span class="logo-text">我的博客</span>
       </div>
 
-      <!-- 导航菜单（优化版） -->
+      <!-- 导航菜单 -->
       <el-menu
         mode="horizontal"
         :default-active="$route.name"
@@ -168,8 +168,9 @@ const handleSearch = () => {
   font-size: 18px;
   width: 104px;
   min-width: 104px;
-  white-space: nowrap; /* 强制文字不换行 */
+  white-space: nowrap;
 }
+
 .nav-menu {
   flex: 1;
   margin: 0 20px;
