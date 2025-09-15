@@ -7,27 +7,49 @@
         <span class="logo-text">我的博客</span>
       </div>
 
-      <!-- 导航菜单 -->
-      <el-menu mode="horizontal" :default-active="$route.name" class="nav-menu">
-        <el-menu-item index="home" @click="$router.push('/')">
+      <!-- 导航菜单（优化版） -->
+      <el-menu
+        mode="horizontal"
+        :default-active="$route.name"
+        class="nav-menu"
+        router
+        route-key="name"
+      >
+        <!-- 首页 -->
+        <el-menu-item index="home">
+          <!-- index与路由name一致 -->
           <el-icon><Home /></el-icon>
           <span>首页</span>
+          <!-- 嵌套router-link，确保路由跳转规范 -->
+          <router-link to="/" class="menu-link" />
         </el-menu-item>
-        <el-menu-item index="blog" @click="$router.push('/blog')">
+
+        <!-- 技术分享 -->
+        <el-menu-item index="blog">
           <el-icon><EditPen /></el-icon>
           <span>技术分享</span>
+          <router-link to="/blog" class="menu-link" />
         </el-menu-item>
-        <el-menu-item index="travel" @click="$router.push('/travel')">
+
+        <!-- 旅行日记 -->
+        <el-menu-item index="travel">
           <el-icon><MapLocation /></el-icon>
           <span>旅行日记</span>
+          <router-link to="/travel" class="menu-link" />
         </el-menu-item>
-        <el-menu-item index="books" @click="$router.push('/books')">
+
+        <!-- 书单 -->
+        <el-menu-item index="books">
           <el-icon><Book /></el-icon>
           <span>书单</span>
+          <router-link to="/books" class="menu-link" />
         </el-menu-item>
-        <el-menu-item index="about" @click="$router.push('/about')">
+
+        <!-- 关于我 -->
+        <el-menu-item index="about">
           <el-icon><User /></el-icon>
           <span>关于我</span>
+          <router-link to="/about" class="menu-link" />
         </el-menu-item>
       </el-menu>
 
@@ -64,8 +86,8 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAppStore } from '@/stores/useAppStore'
 // 导入Element图标
-import { Document, Home, EditPen, MapLocation, Book, User } from '@element-plus/icons-vue'
-
+// import {  Home, EditPen, MapLocation, Book, User } from '@element-plus/icons-vue'
+import { Home, EditPen, MapLocation, Book, User } from '@element-plus/icons-vue'
 // 路由实例
 // const route = useRoute()
 const router = useRouter()
@@ -99,6 +121,29 @@ const handleSearch = () => {
 </script>
 
 <style scoped>
+/* 隐藏router-link默认样式，不影响menu-item的点击区域 */
+.menu-link {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  text-indent: -9999px;
+  overflow: hidden;
+}
+
+.nav-menu {
+  flex: 1;
+  margin: 0 20px;
+  /* 可选：调整菜单文字大小和间距 */
+  --el-menu-item-font-size: 14px;
+}
+
+/* 优化当前页高亮样式（可选，按需求调整） */
+:deep(.el-menu-item.is-active) {
+  color: var(--el-color-primary) !important;
+  font-weight: 500;
+}
 .main-header {
   display: flex;
   background-color: var(--el-bg-color);

@@ -48,7 +48,7 @@ import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useDataStore } from '@/stores/useDataStore'
 import { Calendar, Tag, ArrowLeft } from '@element-plus/icons-vue'
-// 导入Markdown渲染库（需要先安装：npm install marked highlight.js）
+
 import { marked } from 'marked'
 import hljs from 'highlight.js'
 import 'highlight.js/styles/github-dark.css' // 代码高亮样式
