@@ -51,6 +51,10 @@ const routes = [
     meta: { title: '首页 - 我的个人博客' } // 页面标题
   },
   {
+    path: '/home',
+    redirect: '/'
+  },
+  {
     path: '/about',
     name: 'about',
     component: AboutView,

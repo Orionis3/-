@@ -34,7 +34,7 @@
 
       <el-card class="link-card" @click="$router.push('/books')">
         <div class="link-content">
-          <el-icon><Book /></el-icon>
+          <el-icon><Notebook /></el-icon>
           <div>
             <h3>读书清单</h3>
             <p>{{ books.length }}本书 · 阅读心得分享</p>
@@ -51,7 +51,7 @@ import { useDataStore } from '@/stores/useDataStore'
 import AvatarCard from '@/components/ui/AvatarCard.vue'
 import RotateMenu from '@/components/ui/RotateMenu.vue'
 import ArticleCard from '@/components/ui/ArticleCard.vue'
-import { EditPen, Right, MapLocation, Book } from '@element-plus/icons-vue'
+import { EditPen, Right, MapLocation, Notebook } from '@element-plus/icons-vue'
 
 // 获取数据
 const dataStore = useDataStore()

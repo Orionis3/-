@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import profile from '@/data/profile'
 import articles from '@/data/articles'
-import books from '@/data/books'
+// import books from '@/data/books'
 import travels from '@/data/travels'
 
 // 定义数据Store
@@ -17,7 +17,7 @@ export const useDataStore = defineStore('data', {
     loadAllData() {
       this.profile = profile
       this.articles = articles
-      this.books = books
+      this.books = require('@/data/books.js').default || []
       this.travels = travels
     },
     // 根据ID获取单篇文章

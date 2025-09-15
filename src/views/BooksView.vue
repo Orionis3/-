@@ -80,7 +80,9 @@ const dataStore = useDataStore()
 const activeTab = ref('finished')
 
 // 所有书籍
-const books = computed(() => dataStore.books)
+const books = computed(() => {
+  return Array.isArray(dataStore.books) ? dataStore.books : []
+})
 
 // 已看完的书籍
 const finishedBooks = computed(() => {

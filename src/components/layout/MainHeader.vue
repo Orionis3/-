@@ -18,7 +18,7 @@
         <!-- 首页 -->
         <el-menu-item index="home">
           <!-- index与路由name一致 -->
-          <el-icon><Home /></el-icon>
+          <el-icon><HomeFilled /></el-icon>
           <span>首页</span>
           <!-- 嵌套router-link，确保路由跳转规范 -->
           <router-link to="/" class="menu-link" />
@@ -40,7 +40,7 @@
 
         <!-- 书单 -->
         <el-menu-item index="books">
-          <el-icon><Book /></el-icon>
+          <el-icon><Notebook /></el-icon>
           <span>书单</span>
           <router-link to="/books" class="menu-link" />
         </el-menu-item>
@@ -85,9 +85,8 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAppStore } from '@/stores/useAppStore'
-// 导入Element图标
-// import {  Home, EditPen, MapLocation, Book, User } from '@element-plus/icons-vue'
-import { Home, EditPen, MapLocation, Book, User } from '@element-plus/icons-vue'
+
+import { EditPen, MapLocation, User, HomeFilled, Notebook } from '@element-plus/icons-vue'
 // 路由实例
 // const route = useRoute()
 const router = useRouter()
