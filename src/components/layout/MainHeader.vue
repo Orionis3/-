@@ -10,7 +10,7 @@
       <!-- 导航菜单 -->
       <el-menu mode="horizontal" :default-active="$route.name" class="nav-menu">
         <el-menu-item index="home" @click="$router.push('/')">
-          <el-icon><Home /></el-icon>
+          <el-icon><HomeFilled /></el-icon>
           <span>首页</span>
         </el-menu-item>
         <el-menu-item index="blog" @click="$router.push('/blog')">
@@ -22,7 +22,7 @@
           <span>旅行日记</span>
         </el-menu-item>
         <el-menu-item index="books" @click="$router.push('/books')">
-          <el-icon><Book /></el-icon>
+          <el-icon><Notebook /></el-icon>
           <span>书单</span>
         </el-menu-item>
         <el-menu-item index="about" @click="$router.push('/about')">
@@ -64,7 +64,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAppStore } from '@/stores/useAppStore'
 // 导入Element图标
-import { Document, Home, EditPen, MapLocation, Book, User } from '@element-plus/icons-vue'
+import { Document, HomeFilled, EditPen, MapLocation, Notebook, User } from '@element-plus/icons-vue'
 
 // 路由实例
 // const route = useRoute()

@@ -19,7 +19,7 @@
             ><el-icon><Calendar /></el-icon> {{ article.date }}</span
           >
           <span
-            ><el-icon><Tag /></el-icon>
+            ><el-icon><PriceTag /></el-icon>
             <el-tag v-for="tag in article.tags" :key="tag" size="small">
               {{ tag }}
             </el-tag>
@@ -47,7 +47,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useDataStore } from '@/stores/useDataStore'
-import { Calendar, Tag, ArrowLeft } from '@element-plus/icons-vue'
+import { Calendar, PriceTag, ArrowLeft } from '@element-plus/icons-vue'
 // 导入Markdown渲染库（需要先安装：npm install marked highlight.js）
 import { marked } from 'marked'
 import hljs from 'highlight.js'

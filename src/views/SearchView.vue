@@ -72,7 +72,7 @@
       <!-- 书籍结果 -->
       <div v-if="groupedResults.书籍 && groupedResults.书籍.length">
         <h3 class="result-type">
-          <el-icon><Book /></el-icon> 书籍
+          <el-icon><Notebook /></el-icon> 书籍
         </h3>
         <el-divider />
         <div class="result-list">
@@ -106,7 +106,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useDataStore } from '@/stores/useDataStore'
-// import { EditPen, MapLocation, Book, Search } from '@element-plus/icons-vue'
+// import { EditPen, MapLocation, Notebook, Search } from '@element-plus/icons-vue'
 
 const route = useRoute()
 const router = useRouter()
