@@ -2,7 +2,7 @@
   <el-header class="main-header">
     <div class="container">
       <!-- 网站logo -->
-      <div class="logo" @click="$router.push('/')" width="200px">
+      <div class="logo" @click="$router.push('/')">
         <el-icon size="24"><Document /></el-icon>
         <span class="logo-text">我的博客</span>
       </div>
@@ -166,6 +166,9 @@ const handleSearch = () => {
   gap: 8px;
   font-weight: bold;
   font-size: 18px;
+  width: 104px;
+  min-width: 104px;
+  white-space: nowrap; /* 强制文字不换行 */
 }
 .nav-menu {
   flex: 1;
