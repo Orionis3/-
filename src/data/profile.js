@@ -21,8 +21,8 @@ export default {
 
   // 擅长领域
   skills: [
-    'Vue3/React',
-    'Pinia/Redux',
+    'Vue3',
+    'Pinia/VUEX',
     'Element Plus/Ant Design',
     'Node.js',
     'Webpack/Vite',
@@ -32,9 +32,9 @@ export default {
 
   // 联系方式
   contact: {
-    github: 'https://github.com/zhangming',
-    email: 'zhangming@example.com',
-    wechat: '前端技术圈',
+    github: 'https://github.com/Orionis3',
+    email: '2933346011@qq.com',
+    wechat: '/assets/images/weixin.jpg',
     blog: 'https://blog.zhangming.com'
   },
 

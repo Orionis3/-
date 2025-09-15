@@ -9,8 +9,12 @@
           <h1>{{ profile.name }}</h1>
           <p class="intro">{{ profile.intro }}</p>
           <div class="contact-links">
-            <el-link :href="profile.contact.github" target="_blank" :icon="Github" />
-            <el-link :href="`mailto:${profile.contact.email}`" icon="Message" />
+            <el-link @click="openPhoto" target="_blank" class="weixin-link" />
+            <el-link :href="profile.contact.github" target="_blank" class="github-link" />
+            <el-link class="contact-link" @click="openEmail"
+              ><el-icon><Message /></el-icon
+            ></el-link>
+
             <el-link :href="profile.contact.blog" target="_blank" icon="Link" />
           </div>
         </div>
@@ -63,12 +67,17 @@
 <script setup>
 import { computed } from 'vue'
 import { useDataStore } from '@/stores/useDataStore'
-
-import { Briefcase, Star, Headset, Github } from '@element-plus/icons-vue'
+import { Briefcase, Star, Headset, Message } from '@element-plus/icons-vue'
 
 // 获取个人信息
 const dataStore = useDataStore()
 const profile = computed(() => dataStore.profile)
+const openEmail = () => {
+  window.location.href = `mailto:${profile.value.contact.email}`
+}
+const openPhoto = () => {
+  window.location.href = 'http://localhost:8080/wechat'
+}
 </script>
 
 <style scoped>
@@ -124,5 +133,38 @@ const profile = computed(() => dataStore.profile)
 
 .el-timeline {
   padding-left: 20px;
+}
+.github-link {
+  /* 默认图片 */
+  display: inline-block;
+  width: 14px; /* 根据实际图片尺寸调整 */
+  height: 14px;
+  background-image: url('@/components/icons/github-fill.svg');
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.github-link:hover {
+  /* hover时的图片 */
+  background-image: url('@/components/icons/github-hover.svg'); /* 准备一张hover状态的图片 */
+}
+.weixin-link {
+  /* 默认图片 */
+  display: inline-block;
+  width: 14px; /* 根据实际图片尺寸调整 */
+  height: 14px;
+  background-image: url('@/components/icons/weixin.svg');
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.weixin-link:hover {
+  /* hover时的图片 */
+  background-image: url('@/components/icons/weixin-hover.svg'); /* 准备一张hover状态的图片 */
+}
+.contact-link {
+  position: relative;
+  z-index: 10; /* 确保链接在最上层 */
+  pointer-events: auto; /* 允许鼠标事件 */
 }
 </style>
