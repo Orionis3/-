@@ -19,7 +19,7 @@
             ><el-icon><Calendar /></el-icon> {{ article.date }}</span
           >
           <span
-            ><el-icon><Tag /></el-icon>
+            ><el-icon><PriceTag /></el-icon>
             <el-tag v-for="tag in article.tags" :key="tag" size="small">
               {{ tag }}
             </el-tag>
