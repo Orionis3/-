@@ -1,6 +1,6 @@
 export default {
   // 基础信息
-  avatar: '../assets/images/avatar.jpg', // 确保该路径下存在头像图片
+  avatar: '/assets/images/avatar.jpg', // 确保该路径下存在头像图片
   name: '张明',
   intro: '资深前端开发工程师 | 技术博主 | 热爱探索新技术',
 
