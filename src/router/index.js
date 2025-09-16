@@ -42,6 +42,11 @@ const SearchView = () =>
     console.error('❌ SearchView加载失败:', err)
     return { template: '<div style="padding: 20px;">搜索页加载失败</div>' }
   })
+const WechatView = () =>
+  import('@/views/WechatView.vue').catch((err) => {
+    console.error('❌ WechatView加载失败:', err)
+    return { template: '<div style="padding: 20px;">微信页面加载失败</div>' }
+  })
 
 const routes = [
   {
@@ -89,6 +94,12 @@ const routes = [
     name: 'search',
     component: SearchView,
     meta: { title: '搜索结果 - 我的个人博客' }
+  },
+  {
+    path: '/wechat',
+    name: 'wechat',
+    component: WechatView,
+    meta: { title: '微信公众号 - 我的个人博客' }
   }
 ]
 
