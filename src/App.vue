@@ -4,15 +4,29 @@
     <!-- 路由出口：所有页面都会渲染到这里 -->
     <router-view />
   </AppLayout>
-
-  <!-- 返回顶部按钮（全局显示） -->
-  <BackToTop />
+  <!-- 添加 Element Plus 回到顶部组件 -->
+  <el-backtop :bottom="100">
+    <div
+      style="
+        height: 100%;
+        width: 100%;
+        background-color: var(--el-bg-color-overlay);
+        box-shadow: var(--el-box-shadow-lighter);
+        text-align: center;
+        line-height: 40px;
+        color: #1989fa;
+        border-radius: 100%;
+      "
+    >
+      ↑
+    </div>
+  </el-backtop>
 </template>
 
 <script setup>
 import { onMounted } from 'vue'
 import AppLayout from '@/components/layout/AppLayout.vue'
-import BackToTop from '@/components/ui/BackToTop.vue'
+
 import { useDataStore } from '@/stores/useDataStore'
 
 // 初始化数据：页面加载时加载所有本地数据

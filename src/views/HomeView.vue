@@ -3,7 +3,6 @@
     <!-- 顶部个人信息和旋转菜单 -->
     <div class="home-header">
       <AvatarCard :profile="profile" />
-      <RotateMenu />
     </div>
 
     <!-- 最新文章区域 -->
@@ -49,7 +48,7 @@
 import { computed } from 'vue'
 import { useDataStore } from '@/stores/useDataStore'
 import AvatarCard from '@/components/ui/AvatarCard.vue'
-import RotateMenu from '@/components/ui/RotateMenu.vue'
+
 import ArticleCard from '@/components/ui/ArticleCard.vue'
 import { EditPen, Right, MapLocation, Notebook } from '@element-plus/icons-vue'
 
