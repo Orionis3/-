@@ -1,59 +1,24 @@
 import { createRouter, createWebHistory } from 'vue-router'
+// 引入全局布局组件（只引入一次，不重复声明）
 
 // 带错误捕获的懒加载组件
-const HomeView = () =>
-  import('@/views/HomeView.vue').catch((err) => {
-    console.error('❌ HomeView加载失败:', err)
-    return { template: '<div style="padding: 20px;">首页加载失败，请检查组件是否存在</div>' }
-  })
-
-const AboutView = () =>
-  import('@/views/AboutView.vue').catch((err) => {
-    console.error('❌ AboutView加载失败:', err)
-    return { template: '<div style="padding: 20px;">关于页加载失败</div>' }
-  })
-
-const BlogView = () =>
-  import('@/views/BlogView.vue').catch((err) => {
-    console.error('❌ BlogView加载失败:', err)
-    return { template: '<div style="padding: 20px;">技术分享页加载失败</div>' }
-  })
-
-const ArticleView = () =>
-  import('@/views/ArticleView.vue').catch((err) => {
-    console.error('❌ ArticleView加载失败:', err)
-    return { template: '<div style="padding: 20px;">文章详情页加载失败</div>' }
-  })
-
-const TravelView = () =>
-  import('@/views/TravelView.vue').catch((err) => {
-    console.error('❌ TravelView加载失败:', err)
-    return { template: '<div style="padding: 20px;">旅行日记页加载失败</div>' }
-  })
-
-const BooksView = () =>
-  import('@/views/BooksView.vue').catch((err) => {
-    console.error('❌ BooksView加载失败:', err)
-    return { template: '<div style="padding: 20px;">书单页加载失败</div>' }
-  })
-
-const SearchView = () =>
-  import('@/views/SearchView.vue').catch((err) => {
-    console.error('❌ SearchView加载失败:', err)
-    return { template: '<div style="padding: 20px;">搜索页加载失败</div>' }
-  })
-const WechatView = () =>
-  import('@/views/WechatView.vue').catch((err) => {
-    console.error('❌ WechatView加载失败:', err)
-    return { template: '<div style="padding: 20px;">微信页面加载失败</div>' }
-  })
+const HomeView = () => import('@/views/HomeView.vue')
+const FoodRotation = () => import('@/views/FoodRotationMenu.vue')
+const AboutView = () => import('@/views/AboutView.vue')
+const BlogView = () => import('@/views/BlogView.vue')
+const ArticleView = () => import('@/views/ArticleView.vue')
+const TravelView = () => import('@/views/TravelView.vue')
+const BooksView = () => import('@/views/BooksView.vue')
+const SearchView = () => import('@/views/SearchView.vue')
+const WechatView = () => import('@/views/WechatView.vue')
 
 const routes = [
+  { path: '/', name: 'Home', component: HomeView, meta: { title: '首页 - 我的个人博客' } },
   {
-    path: '/',
-    name: 'home',
-    component: HomeView,
-    meta: { title: '首页 - 我的个人博客' } // 页面标题
+    path: '/food-rotation',
+    name: 'FoodRotation',
+    component: FoodRotation,
+    meta: { title: '今天吃什么 - 我的个人博客' }
   },
   {
     path: '/home',
