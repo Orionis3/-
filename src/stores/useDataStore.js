@@ -1,17 +1,16 @@
 import { defineStore } from 'pinia'
-import profile from '@/data/profile'
-import articles from '@/data/articles'
-// import books from '@/data/books'
-import travels from '@/data/travels'
+import profile from '@/data/profile.js'
+import articles from '@/data/articles.js'
+import travels from '@/data/travels.js'
 
-// 定义数据Store
 export const useDataStore = defineStore('data', {
   state: () => ({
-    profile: {}, // 个人信息
-    articles: [], // 博客文章
-    books: [], // 书单
-    travels: [] // 旅行日记
+    profile: {},
+    articles: [],
+    books: [],
+    travels: []
   }),
+
   actions: {
     // 加载所有本地数据
     loadAllData() {
@@ -20,29 +19,53 @@ export const useDataStore = defineStore('data', {
       this.books = require('@/data/books.js').default || []
       this.travels = travels
     },
-    // 根据ID获取单篇文章
+
+    // 获取单篇文章详情
     getArticleById(id) {
       return this.articles.find((article) => article.id === id)
     },
-    // 搜索功能（匹配标题、内容、标签）
-    searchContent(keyword) {
-      if (!keyword) return []
-      const lowerKeyword = keyword.toLowerCase()
 
-      // 搜索范围：文章、旅行日记、书籍
-      const results = [
-        ...this.articles.map((item) => ({ ...item, type: '文章' })),
-        ...this.travels.map((item) => ({ ...item, type: '旅行日记' })),
-        ...this.books.map((item) => ({ ...item, type: '书籍' }))
-      ].filter((item) => {
-        // 匹配标题、内容或标签
-        const matchTitle = item.title.toLowerCase().includes(lowerKeyword)
-        const matchContent = item.content?.toLowerCase().includes(lowerKeyword)
-        const matchTags = item.tags?.some((tag) => tag.toLowerCase().includes(lowerKeyword))
-        return matchTitle || matchContent || matchTags
+    // 获取分类文章
+    getArticlesByCategory(category) {
+      return this.articles.filter((article) => article.category === category)
+    },
+
+    // 获取最新文章
+    getLatestArticles(limit = 3) {
+      return [...this.articles].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, limit)
+    }
+  },
+
+  getters: {
+    // 按年份归档文章
+    articlesByYear() {
+      const yearMap = {}
+      this.articles.forEach((article) => {
+        const year = new Date(article.date).getFullYear()
+        if (!yearMap[year]) {
+          yearMap[year] = []
+        }
+        yearMap[year].push(article)
       })
+      return yearMap
+    },
 
-      return results
+    // 获取所有分类
+    allCategories() {
+      const categories = new Set()
+      this.articles.forEach((article) => {
+        categories.add(article.category)
+      })
+      return Array.from(categories)
+    },
+
+    // 统计各分类文章数量
+    categoryCount() {
+      const countMap = {}
+      this.articles.forEach((article) => {
+        countMap[article.category] = (countMap[article.category] || 0) + 1
+      })
+      return countMap
     }
   }
 })
