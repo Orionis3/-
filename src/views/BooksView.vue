@@ -43,7 +43,7 @@
                 <p class="author">作者：{{ book.author }}</p>
                 <p class="publisher">出版社：{{ book.publisher }}</p>
 
-                <el-progress :percentage="book.progress" stroke-width="6" class="reading-progress">
+                <el-progress :percentage="book.progress" :stroke-width="6" class="reading-progress">
                   <template #format="scope"> 已读 {{ scope.percentage }}% </template>
                 </el-progress>
 

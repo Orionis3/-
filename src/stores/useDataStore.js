@@ -33,6 +33,45 @@ export const useDataStore = defineStore('data', {
     // 获取最新文章
     getLatestArticles(limit = 3) {
       return [...this.articles].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, limit)
+    },
+    updateArticleViews(id, views) {
+      const article = this.articles.find((a) => a.id === id)
+      if (article) {
+        article.views = views
+      }
+    },
+
+    // 更新文章点赞数
+    updateArticleLikes(id, likes) {
+      const article = this.articles.find((a) => a.id === id)
+      if (article) {
+        article.likes = likes
+      }
+    },
+
+    // 更新文章评论
+    updateArticleComments(id, comments) {
+      const article = this.articles.find((a) => a.id === id)
+      if (article) {
+        article.comments = comments
+      }
+    },
+
+    // 获取热门文章
+    getPopularArticles(limit = 5) {
+      // 简单实现：按阅读量排序
+      return [...this.articles].sort((a, b) => (b.views || 0) - (a.views || 0)).slice(0, limit)
+    },
+
+    // 获取相关文章
+    getRelatedArticles(tags, currentId, limit = 3) {
+      if (!tags || tags.length === 0) return []
+
+      // 找到有共同标签的文章
+      return [...this.articles]
+        .filter((a) => a.id !== currentId && a.tags.some((tag) => tags.includes(tag)))
+        .sort((a, b) => new Date(b.date) - new Date(a.date))
+        .slice(0, limit)
     }
   },
 

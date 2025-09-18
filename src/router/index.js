@@ -8,6 +8,7 @@ const AboutView = () => import('@/views/AboutView.vue')
 const BlogView = () => import('@/views/BlogView.vue')
 const ArticleView = () => import('@/views/ArticleView.vue')
 const TravelView = () => import('@/views/TravelView.vue')
+const TravelDetaView = () => import('@/views/TravelDetaView.vue')
 const BooksView = () => import('@/views/BooksView.vue')
 const SearchView = () => import('@/views/SearchView.vue')
 const WechatView = () => import('@/views/WechatView.vue')
@@ -37,7 +38,7 @@ const routes = [
     meta: { title: '技术分享 - 我的个人博客' }
   },
   {
-    path: '/article', // 动态路由：通过文章ID匹配详情页
+    path: '/article/:id', // 动态路由：通过文章ID匹配详情页
     name: 'article',
     component: ArticleView,
     meta: { title: '文章详情 - 我的个人博客' }
@@ -47,6 +48,12 @@ const routes = [
     name: 'travel',
     component: TravelView,
     meta: { title: '旅行日记 - 我的个人博客' }
+  },
+  {
+    path: '/travel/:id',
+    name: 'travelDetail',
+    component: TravelDetaView,
+    meta: { title: '旅行日记详情 - 我的个人博客' }
   },
   {
     path: '/books',

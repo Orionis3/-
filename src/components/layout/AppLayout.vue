@@ -35,7 +35,6 @@ import MainFooter from './MainFooter.vue'
   flex: 1;
   max-width: 1200px;
   width: 100%;
-  height: 900px;
   margin: 0 auto;
   padding: 20px;
 }

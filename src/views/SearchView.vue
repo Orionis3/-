@@ -30,7 +30,7 @@
             v-for="item in groupedResults.文章"
             :key="item.id"
             class="result-item"
-            @click="$router.push(`/article/${item.id}`)"
+            @click="$router.push(`/travel/${item.id}`)"
           >
             <h4 class="result-title">{{ highlightKeyword(item.title) }}</h4>
             <p class="result-excerpt">
