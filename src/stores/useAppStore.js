@@ -1,24 +1,42 @@
 import { defineStore } from 'pinia'
 
-// 定义应用状态Store
 export const useAppStore = defineStore('app', {
   state: () => ({
-    isDark: false, // 深色模式开关
-    searchKeyword: '' // 搜索关键词
+    isDark: false,
+    isMenuCollapsed: false,
+    searchKeyword: ''
   }),
   actions: {
-    // 切换深色模式
+    // 初始化主题模式（从本地存储读取）
+    initDarkMode() {
+      const savedMode = localStorage.getItem('isDark')
+      this.isDark = savedMode === 'true'
+      // 应用主题
+      if (this.isDark) {
+        document.documentElement.classList.add('dark')
+      } else {
+        document.documentElement.classList.remove('dark')
+      }
+    },
+
+    // 切换深色/浅色模式
     toggleDarkMode() {
       this.isDark = !this.isDark
-      // 同步到HTML根元素的class，方便CSS控制样式
-      document.documentElement.classList.toggle('dark', this.isDark)
+      // 更新HTML根元素类名
+      if (this.isDark) {
+        document.documentElement.classList.add('dark')
+      } else {
+        document.documentElement.classList.remove('dark')
+      }
+      // 保存状态到本地存储
+      localStorage.setItem('isDark', this.isDark)
     },
-    // 初始化深色模式（跟随系统设置）
-    initDarkMode() {
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-      this.isDark = prefersDark
-      document.documentElement.classList.toggle('dark', prefersDark)
+
+    // 切换菜单折叠状态
+    toggleMenu() {
+      this.isMenuCollapsed = !this.isMenuCollapsed
     },
+
     // 设置搜索关键词
     setSearchKeyword(keyword) {
       this.searchKeyword = keyword

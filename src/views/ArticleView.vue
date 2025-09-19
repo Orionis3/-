@@ -1,200 +1,242 @@
 <template>
-  <div class="article-detail-page">
-    <!-- 面包屑导航 -->
-    <div class="container breadcrumb-container">
-      <el-breadcrumb separator="›">
-        <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-        <el-breadcrumb-item :to="{ path: '/blog' }">技术文章</el-breadcrumb-item>
-        <el-breadcrumb-item>{{ article?.title || '文章详情' }}</el-breadcrumb-item>
-      </el-breadcrumb>
+  <div class="page-container">
+    <!-- 文章头部导航 - 标题栏区域 -->
+    <div class="article-header-nav">
+      <el-page-header @back="handleBack">
+        <template #content>
+          <el-breadcrumb separator="/">
+            <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+            <el-breadcrumb-item :to="{ path: '/articles' }">文章</el-breadcrumb-item>
+            <el-breadcrumb-item>{{ article?.title || '加载中...' }}</el-breadcrumb-item>
+          </el-breadcrumb>
+        </template>
+      </el-page-header>
     </div>
 
     <!-- 主要内容区 -->
-    <div class="container main-content">
-      <div class="content-wrapper">
-        <!-- 文章主体 -->
-        <div class="article-main">
-          <!-- 加载状态 -->
-          <el-skeleton v-if="loading" :loading="loading" class="article-skeleton">
-            <template #template>
-              <div style="height: 40px; margin-bottom: 15px"></div>
-              <div style="height: 24px; margin-bottom: 25px"></div>
-              <div style="height: 20px; width: 100%; margin-bottom: 15px"></div>
-              <div style="height: 20px; width: 100%; margin-bottom: 15px"></div>
-              <div style="height: 20px; width: 80%; margin-bottom: 30px"></div>
-              <div style="height: 280px; width: 100%; margin-bottom: 30px"></div>
-              <div style="height: 20px; width: 100%; margin-bottom: 15px"></div>
-            </template>
-          </el-skeleton>
+    <div class="container">
+      <div class="main-content">
+        <div class="content-wrapper">
+          <!-- 文章主体 -->
+          <div class="article-main">
+            <el-skeleton active v-if="loading" class="article-skeleton" />
 
-          <!-- 文章内容 -->
-          <el-card v-else-if="article" class="article-card">
-            <!-- 文章头部 -->
-            <div class="article-header">
+            <el-card v-else-if="article" class="article-card">
+              <!-- 文章标题 -->
               <h1 class="article-title">{{ article.title }}</h1>
 
+              <!-- 文章元数据 -->
               <div class="article-meta">
-                <div class="publish-info">
-                  <span class="meta-item"
-                    ><el-icon size="16"><Calendar /></el-icon> {{ formatDate(article.date) }}</span
-                  >
-                  <span class="meta-item"
-                    ><el-icon size="16"><Eye /></el-icon> {{ article.views }} 阅读</span
-                  >
-                  <span class="meta-item"
-                    ><el-icon size="16"><Message /></el-icon>
-                    {{ article.comments?.length || 0 }} 评论</span
-                  >
-                </div>
+                <span class="publish-date">
+                  <el-icon size="16"><Calendar /></el-icon>
+                  {{ formatDate(article.date) }}
+                </span>
+                <span class="view-count">
+                  <el-icon size="16"><Eye /></el-icon>
+                  {{ article.views }} 阅读
+                </span>
               </div>
 
+              <!-- 文章标签 -->
               <div class="article-tags">
                 <el-tag
                   v-for="tag in article.tags"
                   :key="tag"
                   type="info"
                   effect="light"
-                  @click="handleTagClick(tag)"
+                  class="article-tag"
                 >
                   {{ tag }}
                 </el-tag>
               </div>
-            </div>
 
-            <!-- 文章封面 -->
-            <div class="article-cover" v-if="article.cover">
-              <img :src="article.cover" :alt="article.title" class="cover-image" />
-            </div>
-
-            <!-- 文章内容 -->
-            <div class="article-content">
-              <div v-html="renderedContent" class="markdown-content"></div>
-
-              <!-- 注意事项卡片 -->
-              <el-card class="tips-card" v-if="article.notes">
-                <template #header>
-                  <div class="tips-header">
-                    <el-icon><WarningFilled /></el-icon>
-                    <span>注意事项</span>
-                  </div>
-                </template>
-                <div class="tips-content">
-                  <p>{{ article.notes }}</p>
-                </div>
-              </el-card>
-
-              <!-- 代码示例 -->
-              <div class="code-example" v-if="article.codeExample">
-                <h3>示例代码</h3>
-                <pre><code class="language-javascript">{{ article.codeExample }}</code></pre>
+              <!-- 文章封面 -->
+              <div class="article-cover" v-if="article.cover">
+                <img
+                  :src="resolveImageUrl(article.cover)"
+                  :alt="article.title"
+                  class="cover-image"
+                />
               </div>
-            </div>
 
-            <!-- 文章底部操作区 -->
-            <div class="article-actions">
-              <el-button type="text" class="action-btn" @click="handleLike">
-                <el-icon :color="isLiked ? '#36d399' : ''"><ThumbUp /></el-icon>
-                <span>{{ article.likes || 0 }} 有用</span>
-              </el-button>
-              <el-button type="text" class="action-btn" @click="handleShare">
-                <el-icon><Share /></el-icon>
-                <span>分享</span>
-              </el-button>
-              <el-button type="text" class="action-btn" @click="handleCopyLink">
-                <el-icon><CopyDocument /></el-icon>
-                <span>复制链接</span>
-              </el-button>
-            </div>
-          </el-card>
+              <!-- 文章内容 -->
+              <div class="article-content">
+                <div v-html="renderedContent" class="markdown-content" ref="markdownContent"></div>
 
-          <el-empty v-else description="未找到文章" />
-
-          <!-- 相关推荐 - 修复显示问题 -->
-          <div class="related-articles" v-if="!loading">
-            <h3 class="related-title">延伸阅读</h3>
-            <!-- 当有相关文章时显示 -->
-            <div class="related-list" v-if="relatedArticles.length > 0">
-              <el-card
-                v-for="(item, index) in relatedArticles"
-                :key="item.id"
-                class="related-card"
-                @click="navigateToArticle(item.id)"
-                :style="{ animationDelay: `${index * 100}ms` }"
-              >
-                <div class="related-item">
-                  <h4 class="related-item-title">{{ item.title }}</h4>
-                  <div class="related-item-meta">
-                    <span>{{ formatDate(item.date) }}</span>
-                    <span>{{ item.tags[0] || '技术' }}</span>
+                <!-- 注意事项卡片 -->
+                <el-card class="tips-card" v-if="article.notes || article.tips">
+                  <template #header>
+                    <div class="tips-header">
+                      <el-icon><WarningFilled /></el-icon>
+                      <span>注意事项</span>
+                    </div>
+                  </template>
+                  <div class="tips-content">
+                    <p>{{ article.notes || article.tips }}</p>
                   </div>
+                </el-card>
+
+                <!-- 代码示例 -->
+                <div class="code-example" v-if="article.codeExample">
+                  <h3>示例代码</h3>
+                  <pre><code class="language-javascript">{{ article.codeExample }}</code></pre>
                 </div>
-              </el-card>
+              </div>
+
+              <!-- 文章底部操作区 -->
+              <div class="article-actions">
+                <el-button type="text" class="action-btn" @click="handleLike">
+                  <el-icon :color="isLiked ? '#36d399' : ''"><ThumbUp /></el-icon>
+                  <span>{{ isLiked ? '已点赞' : '点赞' }}</span>
+                </el-button>
+                <el-button type="text" class="action-btn" @click="handleShare">
+                  <el-icon><Share /></el-icon>
+                  <span>分享</span>
+                </el-button>
+                <el-button type="text" class="action-btn" @click="handleCopyLink">
+                  <el-icon><CopyDocument /></el-icon>
+                  <span>复制链接</span>
+                </el-button>
+                <el-button type="text" class="action-btn" @click="handleComment">
+                  <el-icon><Message /></el-icon>
+                  <span>评论</span>
+                </el-button>
+              </div>
+            </el-card>
+
+            <!-- 文章未找到提示 -->
+            <div v-else class="article-not-found">
+              <el-empty description="未找到该文章内容" />
+              <el-button class="back-button" @click="handleBack">返回文章列表</el-button>
             </div>
 
-            <!-- 当没有相关文章时显示 -->
-            <div class="no-related" v-else>
-              <p>暂无相关文章推荐</p>
+            <!-- 相关文章推荐 -->
+            <div class="related-articles">
+              <h3 class="related-title">
+                <el-icon><Document /></el-icon> 相关推荐
+              </h3>
+              <div v-if="relatedArticles.length > 0" class="related-list">
+                <el-card
+                  v-for="(item, index) in relatedArticles"
+                  :key="item.id"
+                  class="related-card"
+                  :style="{ animationDelay: `${index * 100}ms` }"
+                  @click="navigateToArticle(item.id)"
+                >
+                  <div class="related-item">
+                    <h4 class="related-item-title">{{ item.title }}</h4>
+                    <div class="related-item-meta">
+                      <span>{{ formatDate(item.date) }}</span>
+                      <span>
+                        <el-icon size="12"><Eye /></el-icon>
+                        {{ item.views || Math.floor(Math.random() * 1000) + 100 }}
+                      </span>
+                    </div>
+                  </div>
+                </el-card>
+              </div>
+
+              <!-- 当没有相关文章时显示 -->
+              <div class="no-related" v-else>
+                <p>暂无相关文章推荐</p>
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- 侧边栏 -->
-        <div class="sidebar">
-          <!-- 文章目录 -->
-          <el-card class="sidebar-card" v-if="toc.length > 0">
-            <template #header>
-              <h3 class="sidebar-title">文章目录</h3>
-            </template>
-            <div class="toc-list">
-              <div
-                class="toc-item"
-                v-for="(item, index) in toc"
-                :key="index"
-                :class="{ 'toc-item-h3': item.level === 3 }"
-                @click="scrollToAnchor(item.id)"
-              >
-                {{ item.text }}
+          <!-- 侧边栏 -->
+          <div class="sidebar">
+            <!-- 文章目录 -->
+            <el-card class="sidebar-card" v-if="toc.length > 0">
+              <template #header>
+                <h3 class="sidebar-title">文章目录</h3>
+              </template>
+              <div class="toc-list">
+                <div
+                  class="toc-item"
+                  v-for="(item, index) in toc"
+                  :key="index"
+                  :class="{ 'toc-item-h3': item.level === 3, active: activeTocId === item.id }"
+                  @click="scrollToAnchor(item.id)"
+                >
+                  {{ item.text }}
+                </div>
               </div>
-            </div>
-          </el-card>
+            </el-card>
 
-          <!-- 技术分类 -->
-          <el-card class="sidebar-card">
-            <template #header>
-              <h3 class="sidebar-title">技术分类</h3>
-            </template>
-            <div class="category-list">
-              <div
-                class="category-item"
-                v-for="(category, index) in categories"
-                :key="category.id"
-                @click="handleCategorySearch(category.name)"
-                :style="{ animationDelay: `${index * 100}ms` }"
-              >
-                <span class="category-name">{{ category.name }}</span>
-                <span class="category-count">{{ category.count }}</span>
+            <!-- 文章标签云 - 替换原技术分类 -->
+            <el-card class="sidebar-card">
+              <template #header>
+                <h3 class="sidebar-title">相关标签</h3>
+              </template>
+              <div class="tag-cloud">
+                <el-tag
+                  v-for="(tag, index) in allRelatedTags"
+                  :key="tag.name"
+                  :type="isCurrentArticleTag(tag.name) ? 'primary' : 'info'"
+                  :effect="isCurrentArticleTag(tag.name) ? 'dark' : 'light'"
+                  :size="getTagSize(tag.count)"
+                  class="cloud-tag"
+                  @click="handleTagSearch(tag.name)"
+                  :style="{ animationDelay: `${index * 100}ms` }"
+                >
+                  {{ tag.name }}
+                  <span class="tag-count">({{ tag.count }})</span>
+                </el-tag>
               </div>
-            </div>
-          </el-card>
+            </el-card>
 
-          <!-- 热门资源 -->
-          <el-card class="sidebar-card">
-            <template #header>
-              <h3 class="sidebar-title">热门文章</h3>
-            </template>
-            <div class="resource-list">
-              <div
-                class="resource-item"
-                v-for="(article, index) in popularArticles"
-                :key="article.id"
-                @click="navigateToArticle(article.id)"
-                :style="{ animationDelay: `${index * 100}ms` }"
-              >
-                <el-icon class="resource-icon"><Document /></el-icon>
-                <span class="resource-name">{{ article.title }}</span>
+            <!-- 作者信息 - 新增内容 -->
+            <el-card class="sidebar-card">
+              <template #header>
+                <h3 class="sidebar-title">作者信息</h3>
+              </template>
+              <div class="author-info">
+                <el-avatar :size="60" class="author-avatar">
+                  <img :src="profile.avatar" alt="作者头像" />
+                </el-avatar>
+                <h4 class="author-name">{{ profile.name }}</h4>
+                <p class="author-intro">{{ profile.intro }}</p>
+
+                <div class="author-stats">
+                  <div class="stat-item">
+                    <span class="stat-value">{{ stats.articleCount }}</span>
+                    <span class="stat-label">文章</span>
+                  </div>
+                  <div class="stat-item">
+                    <span class="stat-value">{{ stats.travelCount }}</span>
+                    <span class="stat-label">旅行</span>
+                  </div>
+                  <div class="stat-item">
+                    <span class="stat-value">{{ stats.bookCount }}</span>
+                    <span class="stat-label">书籍</span>
+                  </div>
+                </div>
+
+                <el-button type="text" class="view-profile" @click="$router.push('/about')">
+                  查看更多
+                </el-button>
               </div>
-            </div>
-          </el-card>
+            </el-card>
+
+            <!-- 热门资源 -->
+            <el-card class="sidebar-card">
+              <template #header>
+                <h3 class="sidebar-title">热门文章</h3>
+              </template>
+              <div class="resource-list">
+                <div
+                  class="resource-item"
+                  v-for="(article, index) in popularArticles"
+                  :key="article.id"
+                  @click="navigateToArticle(article.id)"
+                  :style="{ animationDelay: `${index * 100}ms` }"
+                >
+                  <el-icon class="resource-icon"><Document /></el-icon>
+                  <span class="resource-name">{{ article.title }}</span>
+                </div>
+              </div>
+            </el-card>
+          </div>
         </div>
       </div>
     </div>
@@ -202,7 +244,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, nextTick, watch } from 'vue'
+import { ref, onMounted, nextTick, watch, computed, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useDataStore } from '@/stores/useDataStore'
 import {
@@ -238,34 +280,53 @@ marked.setOptions({
 const route = useRoute()
 const router = useRouter()
 const dataStore = useDataStore()
-const articleId = ref(route.params.id)
+
+// 计算属性获取路由参数，确保响应式
+const articleId = computed(() => route.params.id)
 
 // 状态
 const loading = ref(true)
 const article = ref(null)
 const isLiked = ref(false)
 const toc = ref([])
-const categories = ref([
-  { id: 1, name: '前端开发', count: 128 },
-  { id: 2, name: '后端开发', count: 96 },
-  { id: 3, name: '移动开发', count: 74 },
-  { id: 4, name: '人工智能', count: 62 },
-  { id: 5, name: '云计算', count: 48 }
-])
+const renderedContent = ref('')
+const activeTocId = ref('') // 用于高亮当前激活的目录项
+const markdownContent = ref(null) // 用于获取文章内容DOM元素
 const popularArticles = ref([])
 const relatedArticles = ref([])
+const allRelatedTags = ref([]) // 所有相关标签
+const profile = ref({}) // 作者信息
+const stats = ref({
+  articleCount: 0,
+  travelCount: 0,
+  bookCount: 0
+})
 
-// 监听路由变化，确保文章ID更新时重新加载
-watch(
-  () => route.params.id,
-  (newId) => {
-    if (newId && newId !== articleId.value) {
-      articleId.value = newId
-      loadArticleData()
-    }
-  },
-  { immediate: true }
-)
+// 处理图片路径
+const resolveImageUrl = (url) => {
+  if (!url) return ''
+  // 检查是否为绝对路径
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    return url
+  }
+  // 检查是否为Base64
+  if (url.startsWith('data:image/')) {
+    return url
+  }
+  // 假设相对路径图片存储在public/images目录下
+  return `/images/${url}`
+}
+
+// 处理Markdown内容中的图片路径
+const processMarkdownContent = (content) => {
+  if (!content) return ''
+
+  // 匹配Markdown图片语法并替换路径
+  return content.replace(/!\[(.*?)\]\((.*?)\)/g, (match, alt, url) => {
+    const resolvedUrl = resolveImageUrl(url)
+    return `![${alt}](${resolvedUrl})`
+  })
+}
 
 // 格式化日期
 const formatDate = (dateString) => {
@@ -274,188 +335,60 @@ const formatDate = (dateString) => {
   return date.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })
 }
 
-// 生成文章目录
-watch(
-  () => article.value?.content,
-  (newContent) => {
-    if (!newContent) {
-      toc.value = []
-      return
-    }
-
-    toc.value = []
-    const tempLexer = new marked.Lexer()
-    const tokens = tempLexer.lex(newContent)
-
-    tokens.forEach((token, index) => {
-      if (token.type === 'heading') {
-        const id = `heading-${index + 1}`
-        toc.value.push({
-          id,
-          text: token.text,
-          level: token.depth
-        })
-      }
-    })
-  },
-  { immediate: true }
-)
-
-// 渲染文章内容
-const renderedContent = computed(() => {
-  if (!article.value?.content) return '<p>文章内容加载中...</p>'
-  return marked.parse(article.value.content)
-})
-
-// 处理点赞
-const handleLike = () => {
-  if (!article.value) return
-  isLiked.value = !isLiked.value
-  article.value.likes = isLiked.value
-    ? (article.value.likes || 0) + 1
-    : Math.max(0, (article.value.likes || 0) - 1)
-  dataStore.updateArticleLikes(articleId.value, article.value.likes)
-}
-
-// 处理分享
-const handleShare = () => {
-  if (!article.value) return
-  const url = window.location.href
-  if (navigator.share) {
-    navigator
-      .share({
-        title: article.value.title,
-        text: `推荐阅读: ${article.value.title}`,
-        url: url
-      })
-      .catch(() => handleCopyLink())
-  } else {
-    handleCopyLink()
-  }
-}
-
-// 复制链接
-const handleCopyLink = () => {
-  const url = window.location.href
-  navigator.clipboard
-    .writeText(url)
-    .then(() => ElMessage.success('链接已复制到剪贴板'))
-    .catch(() => ElMessage.error('复制失败，请手动复制'))
-}
-
-// 目录跳转
-const scrollToAnchor = (id) => {
-  nextTick(() => {
-    // 尝试直接获取ID元素
-    let element = document.getElementById(id)
-
-    // 如果直接获取失败，尝试通过选择器获取
-    if (!element) {
-      element = document.querySelector(`#${id}`)
-    }
-
-    // 如果仍然找不到，尝试通过标题文本查找
-    if (!element && toc.value.length) {
-      const targetItem = toc.value.find((item) => item.id === id)
-      if (targetItem) {
-        const headers = document.querySelectorAll('.markdown-content h2, .markdown-content h3')
-        element = Array.from(headers).find(
-          (header) => header.textContent.trim() === targetItem.text.trim()
-        )
-      }
-    }
-
-    if (element) {
-      // 平滑滚动到目标位置，距离顶部80px
-      const headerOffset = 80
-      const elementPosition = element.getBoundingClientRect().top
-      const offsetPosition = elementPosition + window.pageYOffset - headerOffset
-
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth'
-      })
-
-      // 高亮效果
-      element.classList.add('toc-highlight')
-      setTimeout(() => element.classList.remove('toc-highlight'), 2000)
-    } else {
-      console.warn(`未找到ID为${id}的元素`)
-      ElMessage.warning('无法跳转到指定章节')
-    }
-  })
-}
-
-// 标签点击
-const handleTagClick = (tag) => {
-  router.push({
-    path: '/search',
-    query: { keyword: tag }
-  })
-}
-
-// 分类搜索
-const handleCategorySearch = (category) => {
-  router.push({
-    path: '/search',
-    query: { keyword: category }
-  })
-}
-
-// 文章跳转
-const navigateToArticle = (id) => {
-  if (!id || id === articleId.value) return
-  window.scrollTo({ top: 0, behavior: 'auto' })
-  router.push(`/article/${id}`)
-}
-
-// 加载文章数据
-const loadArticleData = () => {
+// 加载文章数据 - 确保正确处理异步操作
+const loadArticleData = async () => {
+  // 确保id有效
   if (!articleId.value) {
     loading.value = false
     return
   }
 
   loading.value = true
-  // 重置状态
-  article.value = null
-  isLiked.value = false
-  toc.value = []
-
   try {
-    // 先尝试从数据存储获取
-    article.value = dataStore.getArticleById(articleId.value) || null
-
-    // 如果数据存储中没有，使用示例数据作为备用
-    if (!article.value) {
-      console.log('使用示例数据作为备用')
-      article.value = {
-        id: articleId.value,
-        title: '前端开发入门指南',
-        date: new Date().toISOString(),
-        views: 1243,
-        likes: 89,
-        tags: ['前端开发', 'JavaScript', 'Vue'],
-        cover: 'https://picsum.photos/800/400',
-        content: `# 前端开发基础\n\n前端开发是创建Web页面或App等前端界面呈现给用户的过程。\n\n## HTML基础\n\nHTML是构建Web页面的基础，定义了网页的结构。\n\n### HTML标签\n\n常用的HTML标签包括div、span、p等，各有不同的用途。\n\n## CSS样式\n\nCSS用于美化网页，控制HTML元素的布局和外观。\n\n## JavaScript交互\n\nJavaScript为网页添加交互功能，使页面更加生动。\n\n通过Vue、React等框架可以更高效地开发复杂的前端应用。`,
-        notes: '本文适合前端初学者参考，建议结合实际项目练习。',
-        codeExample: `// Vue组件示例
-export default {
-  data() {
-    return {
-      message: 'Hello World'
-    }
-  },
-  methods: {
-    greet() {
-      alert(this.message);
-    }
-  }
-}`
-      }
+    // 确保数据仓库已加载数据
+    if (dataStore.articles.length === 0) {
+      await dataStore.loadAllData()
     }
 
-    // 获取热门文章 - 如果获取失败则使用示例数据
+    // 从数据仓库获取文章
+    const articleData = dataStore.getArticleById(articleId.value)
+
+    if (articleData) {
+      article.value = articleData
+      // 处理并渲染文章内容
+      const processedContent = processMarkdownContent(articleData.content)
+      renderedContent.value = marked(processedContent)
+
+      // 等待内容渲染后再生成目录
+      await nextTick()
+      generateTocFromRenderedContent()
+
+      // 加载相关标签
+      loadRelatedTags(articleData.tags)
+    } else {
+      // 未找到文章时的处理
+      console.warn(`文章 ${articleId.value} 未找到`)
+      article.value = null
+      renderedContent.value = ''
+      toc.value = []
+      allRelatedTags.value = []
+    }
+
+    // 获取作者信息和统计数据
+    profile.value = dataStore.profile || {
+      name: '博主',
+      intro: '热爱技术与分享的开发者',
+      avatar: '/images/avatar-default.png'
+    }
+
+    // 统计数据
+    stats.value = {
+      articleCount: dataStore.articles.length || 0,
+      travelCount: dataStore.travels.length || 0,
+      bookCount: dataStore.books.length || 0
+    }
+
+    // 获取热门文章
     popularArticles.value = dataStore.getPopularArticles(5) || [
       { id: 2, title: 'Vue3组件开发最佳实践' },
       { id: 3, title: 'JavaScript异步编程全解析' },
@@ -464,7 +397,7 @@ export default {
       { id: 6, title: 'TypeScript入门到精通' }
     ]
 
-    // 确保相关文章始终有数据
+    // 获取相关文章
     relatedArticles.value = dataStore.getRelatedArticles(
       article.value?.tags || [],
       articleId.value,
@@ -474,7 +407,7 @@ export default {
         id: 7,
         title: 'Vue组件间通信方式总结',
         date: new Date(Date.now() - 86400000 * 3).toISOString(),
-        tags: ['Vue', '前端开发']
+        tags: ['Vue', '组件通信']
       },
       {
         id: 8,
@@ -483,82 +416,264 @@ export default {
         tags: ['JavaScript', '前端开发']
       }
     ]
-
-    // 更新阅读量
-    if (article.value && article.value.views !== undefined) {
-      article.value.views++
-      try {
-        dataStore.updateArticleViews(articleId.value, article.value.views)
-      } catch (e) {
-        console.log('更新阅读量失败，使用本地更新')
-      }
-    }
-
-    // 检查是否已点赞
-    try {
-      isLiked.value = dataStore.isArticleLiked(articleId.value) || false
-    } catch (e) {
-      console.log('检查点赞状态失败，默认未点赞')
-      isLiked.value = false
-    }
   } catch (error) {
-    console.error('加载文章数据失败:', error)
-    // 即使出错也显示示例文章，避免空白页面
+    console.error('加载文章失败:', error)
+    ElMessage.warning('加载文章内容失败，请稍后重试')
+    // 错误处理：确保显示错误状态而非空白
     article.value = {
       id: articleId.value,
-      title: '前端开发入门指南',
+      title: '文章加载失败',
       date: new Date().toISOString(),
-      views: 1243,
-      likes: 89,
-      tags: ['前端开发', 'JavaScript', 'Vue'],
-      content:
-        '加载正式数据失败，显示示例内容。前端开发是创建Web页面或App等前端界面呈现给用户的过程。'
+      tags: ['错误'],
+      views: 0,
+      content: '# 文章加载失败\n\n很抱歉，无法加载该文章内容。请尝试刷新页面或稍后再试。',
+      notes: '如果问题持续，请联系管理员'
     }
-    // 确保相关文章在出错时也有数据
-    relatedArticles.value = [
-      {
-        id: 7,
-        title: 'Vue组件间通信方式总结',
-        date: new Date(Date.now() - 86400000 * 3).toISOString(),
-        tags: ['Vue', '前端开发']
-      },
-      {
-        id: 8,
-        title: '现代JavaScript特性详解',
-        date: new Date(Date.now() - 86400000 * 5).toISOString(),
-        tags: ['JavaScript', '前端开发']
-      }
-    ]
-    ElMessage.warning('加载正式数据失败，显示示例内容')
+    renderedContent.value = marked(article.value.content)
+    await nextTick()
+    generateTocFromRenderedContent()
+    loadRelatedTags(article.value.tags)
   } finally {
     loading.value = false
   }
 }
 
+// 加载相关标签
+const loadRelatedTags = (articleTags) => {
+  // 从所有文章中收集标签并计数
+  const tagMap = new Map()
+
+  // 先添加当前文章的标签
+  articleTags.forEach((tag) => {
+    tagMap.set(tag, (tagMap.get(tag) || 0) + 1)
+  })
+
+  // 再添加其他文章的标签
+  dataStore.articles.forEach((art) => {
+    if (art.id !== articleId.value) {
+      art.tags.forEach((tag) => {
+        tagMap.set(tag, (tagMap.get(tag) || 0) + 1)
+      })
+    }
+  })
+
+  // 转换为数组并排序
+  allRelatedTags.value = Array.from(tagMap.entries())
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 15) // 限制最多显示15个标签
+}
+
+// 判断是否是当前文章的标签
+const isCurrentArticleTag = (tagName) => {
+  return article.value?.tags?.includes(tagName) || false
+}
+
+// 根据标签数量确定标签大小
+const getTagSize = (count) => {
+  if (count > 5) return 'large'
+  if (count > 2) return 'medium'
+  return 'small'
+}
+
+// 从渲染后的内容生成目录（确保ID与实际渲染的一致）
+const generateTocFromRenderedContent = () => {
+  if (!markdownContent.value) return
+
+  toc.value = []
+  // 从渲染后的HTML中获取所有标题元素
+  const headings = markdownContent.value.querySelectorAll('h1, h2, h3, h4')
+
+  headings.forEach((heading) => {
+    const id = heading.id
+    const text = heading.textContent.trim()
+    const level = parseInt(heading.tagName.substring(1)) // 从h1得到1，h2得到2等
+
+    if (id && text && level >= 1 && level <= 4) {
+      toc.value.push({
+        id,
+        text,
+        level
+      })
+    }
+  })
+}
+
+const scrollToAnchor = (id) => {
+  // 使用nextTick确保DOM已更新
+  nextTick(() => {
+    const element = document.getElementById(id)
+    if (!element) {
+      console.warn(`未找到ID为${id}的元素`)
+      return
+    }
+
+    // 计算所有需要考虑的固定元素高度
+    const headerNav = document.querySelector('.article-header-nav')
+    const headerHeight = headerNav ? headerNav.offsetHeight : 0
+
+    // 获取元素在文档中的位置
+    const rect = element.getBoundingClientRect()
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop
+
+    // 计算目标滚动位置（减去固定头部高度和额外间距）
+    const targetPosition = scrollTop + rect.top - headerHeight - 20
+
+    // 执行滚动
+    window.scrollTo({
+      top: targetPosition,
+      behavior: 'smooth'
+    })
+
+    // 手动设置当前激活的目录项
+    activeTocId.value = id
+  })
+}
+
+// 监听滚动，更新当前激活的目录项
+const handleScroll = () => {
+  if (toc.value.length === 0) return
+
+  const scrollPosition = window.scrollY + 100 // 增加偏移量，提前激活目录项
+
+  // 获取导航高度
+  const headerNav = document.querySelector('.article-header-nav')
+  const headerHeight = headerNav ? headerNav.offsetHeight : 0
+
+  // 从后往前检查，找到第一个在视口内的标题
+  for (let i = toc.value.length - 1; i >= 0; i--) {
+    const element = document.getElementById(toc.value[i].id)
+    if (element) {
+      const elementTop = element.offsetTop - headerHeight - 30
+      if (scrollPosition >= elementTop) {
+        activeTocId.value = toc.value[i].id
+        break
+      }
+    }
+  }
+}
+
+// 导航到文章
+const navigateToArticle = (id) => {
+  router.push(`/articles/${id}`)
+}
+
+// 处理标签搜索
+const handleTagSearch = (tag) => {
+  router.push({ path: '/blog', query: { tag } })
+}
+
+// 点赞功能
+const handleLike = () => {
+  isLiked.value = !isLiked.value
+  ElMessage.success(isLiked.value ? '点赞成功' : '取消点赞')
+}
+
+// 分享功能
+const handleShare = () => {
+  const url = window.location.href
+  navigator.clipboard
+    .writeText(url)
+    .then(() => {
+      ElMessage.success('链接已复制到剪贴板，快去分享吧！')
+    })
+    .catch(() => {
+      ElMessage.error('复制失败，请手动复制链接')
+    })
+}
+
+// 复制链接
+const handleCopyLink = () => {
+  const url = window.location.href
+  navigator.clipboard
+    .writeText(url)
+    .then(() => {
+      ElMessage.success('链接已复制')
+    })
+    .catch(() => {
+      ElMessage.error('复制失败')
+    })
+}
+
+// 评论功能
+const handleComment = () => {
+  ElMessage.info('评论功能开发中，敬请期待')
+}
+
+// 返回上一页逻辑
+const handleBack = () => {
+  router.back()
+}
+
 // 初始化加载
 onMounted(() => {
-  // 确保DOM加载完成后再加载数据
   nextTick(() => {
     loadArticleData()
+    // 添加滚动监听
+    window.addEventListener('scroll', handleScroll)
   })
 })
+
+// 组件卸载时移除滚动监听
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll)
+})
+
+// 监听路由变化
+watch(
+  () => route.params.id,
+  (newId, oldId) => {
+    if (newId && newId !== oldId) {
+      // 重置状态
+      article.value = null
+      renderedContent.value = ''
+      toc.value = []
+      activeTocId.value = ''
+      allRelatedTags.value = []
+      loadArticleData()
+    }
+  },
+  { immediate: true, deep: true }
+)
 </script>
 
 <style scoped>
+/* 页面最外层容器 */
+.page-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
 /* 基础样式 */
 .container {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
+  flex: 1;
 }
 
-/* 面包屑导航 */
-.breadcrumb-container {
+/* 文章未找到样式 */
+.article-not-found {
+  text-align: center;
+  padding: 50px 0;
+}
+
+.back-button {
+  margin-top: 20px;
+}
+
+/* 文章头部导航样式 - 标题栏 */
+.article-header-nav {
   padding: 16px 20px;
   border-bottom: 1px solid var(--el-border-color);
-  font-size: 0.9rem;
   background-color: var(--el-bg-color);
+  position: sticky;
+  top: 0;
+  z-index: 1000; /* 提高z-index确保不会被其他内容覆盖 */
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* 主要内容区 */
@@ -616,152 +731,118 @@ onMounted(() => {
   }
 }
 
-/* 文章头部 */
-.article-header {
-  margin-bottom: 30px;
-}
-
 .article-title {
-  font-size: 2rem;
-  font-weight: 700;
-  line-height: 1.3;
-  margin-bottom: 24px;
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  line-height: 1.4;
   color: var(--el-text-color-primary);
-  position: relative;
-  padding-bottom: 12px;
-}
-
-.article-title::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 60px;
-  height: 3px;
-  background-color: #3b82f6;
-  border-radius: 2px;
 }
 
 .article-meta {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-  gap: 16px;
-}
-
-.publish-info {
-  display: flex;
-  gap: 18px;
-  font-size: 0.9rem;
+  gap: 20px;
   color: var(--el-text-color-secondary);
+  margin-bottom: 20px;
+  font-size: 0.9rem;
 }
 
-.meta-item {
+.article-meta span {
   display: flex;
   align-items: center;
   gap: 6px;
-  transition: color 0.2s;
 }
 
 .article-tags {
   display: flex;
-  gap: 10px;
   flex-wrap: wrap;
-  margin-bottom: 24px;
+  gap: 10px;
+  margin-bottom: 30px;
 }
 
-.article-tags .el-tag {
+.article-tag {
   transition: all 0.2s;
-  cursor: pointer;
-  animation: fadeIn 0.5s ease-in-out;
 }
 
-.article-tags .el-tag:hover {
+.article-tag:hover {
   transform: translateY(-2px);
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
 }
 
-/* 文章内容 */
 .article-cover {
+  width: 100%;
   margin-bottom: 30px;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  transition: transform 0.3s ease;
-}
-
-.article-cover:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
 .cover-image {
   width: 100%;
   height: auto;
-  object-fit: cover;
-  transition: transform 0.5s ease;
+  transition: all 0.3s ease;
 }
 
-.article-content {
+.markdown-content {
   line-height: 1.8;
-  color: var(--el-text-color-regular);
   font-size: 1rem;
 }
 
-/* Markdown内容样式 */
+.markdown-content h1,
 .markdown-content h2,
-.markdown-content h3 {
-  margin: 1.8rem 0 1rem;
+.markdown-content h3,
+.markdown-content h4 {
+  margin: 1.5rem 0 1rem;
   color: var(--el-text-color-primary);
-  font-weight: 600;
-  position: relative;
-  padding-left: 12px;
-  transition: background-color 0.3s, transform 0.3s;
-  animation: fadeIn 0.5s ease-in-out;
+  scroll-margin-top: 100px; /* 为固定头部预留空间 */
 }
 
-.markdown-content h2.toc-highlight,
-.markdown-content h3.toc-highlight {
-  background-color: rgba(59, 130, 246, 0.1);
-  transform: translateX(5px);
+.markdown-content h1 {
+  font-size: 1.6rem;
+  border-bottom: 1px solid var(--el-border-color);
+  padding-bottom: 0.5rem;
 }
 
 .markdown-content h2 {
-  font-size: 1.5rem;
+  font-size: 1.4rem;
+  border-bottom: 1px dashed var(--el-border-color);
   padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--el-border-color);
-}
-
-.markdown-content h2::before,
-.markdown-content h3::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 8px;
-  width: 4px;
-  height: calc(100% - 16px);
-  background-color: #3b82f6;
-  border-radius: 2px;
 }
 
 .markdown-content h3 {
-  font-size: 1.25rem;
+  font-size: 1.2rem;
 }
 
 .markdown-content p {
-  margin-bottom: 1.2rem;
-  animation: fadeIn 0.5s ease-in-out;
+  margin-bottom: 1rem;
+}
+
+.markdown-content ul,
+.markdown-content ol {
+  margin-bottom: 1rem;
+  padding-left: 2rem;
+}
+
+.markdown-content li {
+  margin-bottom: 0.5rem;
+}
+
+.markdown-content a {
+  color: #3b82f6;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.markdown-content a:hover {
+  color: #2563eb;
+  text-decoration: underline;
 }
 
 .markdown-content img {
   max-width: 100%;
-  margin: 1.5rem auto;
-  display: block;
-  border-radius: 4px;
+  height: auto;
+  border-radius: 6px;
+  margin: 1.5rem 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  animation: fadeIn 0.5s ease-in-out;
 }
 
 .markdown-content img:hover {
@@ -778,7 +859,6 @@ onMounted(() => {
   font-size: 0.9rem;
   line-height: 1.6;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  animation: fadeIn 0.5s ease-in-out;
 }
 
 .markdown-content pre:hover {
@@ -796,10 +876,8 @@ onMounted(() => {
   margin: 1rem 0;
   background-color: #eff6ff;
   border-radius: 0 4px 4px 0;
-  animation: fadeIn 0.5s ease-in-out;
 }
 
-/* 注意事项卡片 */
 .tips-card {
   margin: 25px 0;
   border-left: 4px solid #f59e0b;
@@ -809,12 +887,6 @@ onMounted(() => {
   border-right: none;
   border-bottom: none;
   box-shadow: none;
-  animation: fadeIn 0.5s ease-in-out;
-  transition: transform 0.3s ease;
-}
-
-.tips-card:hover {
-  transform: translateX(5px);
 }
 
 .tips-header {
@@ -825,7 +897,6 @@ onMounted(() => {
   font-weight: 500;
 }
 
-/* 文章操作区 */
 .article-actions {
   display: flex;
   gap: 20px;
@@ -850,14 +921,12 @@ onMounted(() => {
   transform: translateY(-2px);
 }
 
-/* 相关推荐 - 修复样式 */
 .related-articles {
   margin-top: 40px;
   padding: 20px;
   background-color: var(--el-bg-color);
   border-radius: 8px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-  animation: fadeIn 0.5s ease-in-out;
 }
 
 .related-title {
@@ -893,7 +962,6 @@ onMounted(() => {
   border-radius: 6px;
   animation: slideIn 0.5s ease-out forwards;
   opacity: 0;
-  overflow: hidden;
 }
 
 .related-card:hover {
@@ -927,7 +995,6 @@ onMounted(() => {
   color: var(--el-text-color-secondary);
 }
 
-/* 无相关文章时的样式 */
 .no-related {
   padding: 20px;
   text-align: center;
@@ -937,7 +1004,6 @@ onMounted(() => {
   margin-top: 16px;
 }
 
-/* 侧边栏 */
 .sidebar {
   display: flex;
   flex-direction: column;
@@ -949,7 +1015,6 @@ onMounted(() => {
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
   border-radius: 8px;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  animation: fadeIn 0.5s ease-in-out;
 }
 
 .sidebar-card:hover {
@@ -974,7 +1039,6 @@ onMounted(() => {
   border-radius: 2px;
 }
 
-/* 目录样式 */
 .toc-list {
   padding: 10px 0;
 }
@@ -1002,13 +1066,17 @@ onMounted(() => {
   color: var(--el-text-color-secondary);
 }
 
-/* 分类和热门文章样式 */
-.category-list,
+/* 激活的目录项样式 */
+.toc-item.active {
+  background-color: #3b82f6;
+  color: white;
+  font-weight: 500;
+}
+
 .resource-list {
   padding: 10px 0;
 }
 
-.category-item,
 .resource-item {
   display: flex;
   align-items: center;
@@ -1021,33 +1089,99 @@ onMounted(() => {
   opacity: 0;
 }
 
-.category-item:hover,
 .resource-item:hover {
   background-color: rgba(59, 130, 246, 0.1);
   color: #3b82f6;
   transform: translateX(3px);
 }
 
-.category-item {
-  justify-content: space-between;
-}
-
 .resource-item {
   gap: 10px;
 }
 
-.category-count {
-  background-color: #dbeafe;
-  color: #3b82f6;
-  font-size: 0.75rem;
-  padding: 2px 8px;
-  border-radius: 12px;
-  transition: all 0.2s;
+/* 标签云样式 */
+.tag-cloud {
+  padding: 10px 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
-.category-item:hover .category-count {
-  background-color: #3b82f6;
-  color: white;
+.cloud-tag {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cloud-tag:hover {
+  transform: translateY(-3px) scale(1.05);
+  z-index: 10;
+}
+
+.tag-count {
+  font-size: 0.7em;
+  margin-left: 4px;
+  opacity: 0.8;
+}
+
+/* 作者信息样式 */
+.author-info {
+  padding: 15px 10px;
+  text-align: center;
+}
+
+.author-avatar {
+  margin: 0 auto 15px;
+  border: 2px solid #f0f2f5;
+}
+
+.author-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--el-text-color-primary);
+}
+
+.author-intro {
+  font-size: 0.9rem;
+  color: var(--el-text-color-secondary);
+  margin-bottom: 15px;
+  padding: 0 10px;
+  line-height: 1.5;
+}
+
+.author-stats {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 15px;
+  padding: 0 10px;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-value {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #3b82f6;
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: var(--el-text-color-secondary);
+}
+
+.view-profile {
+  color: #3b82f6;
+  padding: 0;
+  font-size: 0.9rem;
+}
+
+.view-profile:hover {
+  color: #2563eb;
+  text-decoration: underline;
 }
 
 /* 响应式设计 */
@@ -1066,54 +1200,22 @@ onMounted(() => {
   }
 }
 
+/* 移动端适配 */
 @media (max-width: 768px) {
   .sidebar {
     grid-template-columns: 1fr;
   }
 
-  .article-title {
-    font-size: 1.75rem;
+  .article-header-nav {
+    padding: 12px 16px;
   }
-}
 
-@media (max-width: 576px) {
-  .article-meta {
-    flex-direction: column;
-    align-items: flex-start;
+  .article-card {
+    padding: 20px 16px;
   }
 
   .article-title {
     font-size: 1.5rem;
   }
-
-  .related-articles {
-    padding: 15px;
-  }
-}
-
-/* 深色模式适配 */
-:deep(.dark) {
-  --el-bg-color: #111827;
-  --el-bg-color-dark: #1f2937;
-  --el-text-color-primary: #f9fafb;
-  --el-text-color-regular: #e5e7eb;
-  --el-text-color-secondary: #9ca3af;
-  --el-border-color: #374151;
-}
-
-:deep(.dark) .tips-card {
-  background-color: #372e06;
-}
-
-:deep(.dark) .markdown-content blockquote {
-  background-color: rgba(59, 130, 246, 0.1);
-}
-
-:deep(.dark) .category-count {
-  background-color: rgba(59, 130, 246, 0.2);
-}
-
-:deep(.dark) .related-articles {
-  background-color: #1f2937;
 }
 </style>

@@ -188,4 +188,14 @@ const handleSearch = () => {
   --el-switch-on-color: #6b7280;
   --el-switch-off-color: #d1d5db;
 }
+/* 深色模式适配补充 */
+:deep(.dark) .footer-links {
+  background-color: #1a1a1a; /* 与页脚背景保持一致 */
+}
+
+/* 确保所有文本在深色模式下可见 */
+:deep(.dark) .footer-links li,
+:deep(.dark) .footer-desc {
+  color: var(--el-text-color-regular);
+}
 </style>

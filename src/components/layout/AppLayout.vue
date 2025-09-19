@@ -1,46 +1,59 @@
 <template>
   <div class="app-layout">
-    <el-container>
-      <el-header
-        ><!-- 顶部导航栏 -->
-        <MainHeader
-      /></el-header>
-      <el-main>
-        <!-- 页面内容区 -->
-        <main class="content">
-          <slot />
-          <!-- 插槽：用于插入具体页面内容 -->
-        </main>
-      </el-main>
-      <el-footer
-        ><!-- 页脚 -->
-        <MainFooter
-      /></el-footer>
-    </el-container>
+    <!-- 头部导航 -->
+    <MainHeader />
+
+    <!-- 主题切换按钮 -->
+    <el-button :icon="ThemeIcon" circle size="small" class="theme-toggle" @click="toggleDarkMode" />
+
+    <!-- 主内容区 -->
+    <main class="main-content">
+      <slot />
+    </main>
+
+    <!-- 页脚 -->
+    <MainFooter />
   </div>
 </template>
 
 <script setup>
 import MainHeader from './MainHeader.vue'
 import MainFooter from './MainFooter.vue'
+import { useAppStore } from '@/stores/useAppStore'
+import { Moon, Sun } from '@element-plus/icons-vue'
+import { computed } from 'vue'
+
+const appStore = useAppStore()
+
+// 切换深色模式
+const toggleDarkMode = () => {
+  appStore.toggleDarkMode()
+}
+
+// 动态切换图标
+const ThemeIcon = computed(() => {
+  return appStore.isDark ? Sun : Moon
+})
 </script>
 
 <style scoped>
 .app-layout {
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
+  min-height: 100vh;
 }
-.content {
+
+.main-content {
   flex: 1;
-  max-width: 1200px;
-  width: 100%;
-  margin: 0 auto;
-  padding: 20px;
+  padding: 20px 0;
 }
-/* 深色模式样式 */
-:deep(.dark) .content {
-  background-color: #1a1a1a;
-  color: #fff;
+
+.theme-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 100;
+  background-color: var(--el-bg-color);
+  border: 1px solid var(--border-color);
 }
 </style>

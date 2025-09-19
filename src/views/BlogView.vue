@@ -17,7 +17,12 @@
 
     <!-- 文章列表 -->
     <div class="article-grid">
-      <ArticleCard v-for="article in filteredArticles" :key="article.id" :article="article" />
+      <ArticleCard
+        v-for="article in filteredArticles"
+        :key="article.id"
+        :article="article"
+        @click="navigateToArticle(article.id)"
+      />
     </div>
 
     <!-- 空状态 -->
@@ -62,7 +67,9 @@ const filteredArticles = computed(() => {
 const handleBack = () => {
   router.back()
 }
-
+const navigateToArticle = (id) => {
+  router.push(`/articles/${id}`)
+}
 // 点击标签筛选
 const handleTagClick = (tag) => {
   activeTag.value = tag

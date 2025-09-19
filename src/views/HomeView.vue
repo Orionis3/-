@@ -1,379 +1,552 @@
 <template>
   <div class="home-container">
-    <!-- 顶部个人信息和旋转菜单 -->
-    <div class="home-header">
-      <!-- 头像卡片 - 居左 -->
-      <AvatarCard :profile="profile" class="avatar-card" />
-
-      <!-- 进度条区域 - 居中偏左 -->
-      <div class="demo-progress">
-        <div class="progress-item">
-          <span class="progress-label">Html+CSS+Js</span>
-          <el-progress :percentage="85" :stroke-width="12" striped striped-flow :duration="49" />
-        </div>
-        <div class="progress-item">
-          <span class="progress-label">Vue3+Vite+Element-Plus</span>
-          <el-progress
-            :percentage="70"
-            :stroke-width="12"
-            striped
-            striped-flow
-            :duration="49"
-            color="#CF9136"
-          />
-        </div>
-        <div class="progress-item">
-          <span class="progress-label">Node.js</span>
-          <el-progress
-            :percentage="65"
-            :stroke-width="12"
-            striped
-            striped-flow
-            :duration="49"
-            color="#5CAE34"
-          />
-        </div>
-        <div class="progress-item">
-          <span class="progress-label">Pinia</span>
-          <el-progress
-            :percentage="70"
-            :stroke-width="12"
-            striped
-            striped-flow
-            :duration="49"
-            color="#DC6161"
-          />
-        </div>
-      </div>
-
-      <!-- 学习时间统计 - 居右（美化后） -->
-      <div class="learning-time">
-        <el-col :xs="24" class="text-center">
-          <!-- 美化标题 -->
-          <div class="time-title">已学习前端</div>
-          <!-- 美化计时器容器 -->
-          <div class="time-container">
-            <!-- 数字块：天 -->
-            <div class="time-block">
-              <span class="time-number">{{ days }}</span>
-              <span class="time-unit">天</span>
-            </div>
-            <span class="time-separator">:</span>
-            <!-- 数字块：时 -->
-            <div class="time-block">
-              <span class="time-number">{{ hours }}</span>
-              <span class="time-unit">时</span>
-            </div>
-            <span class="time-separator">:</span>
-            <!-- 数字块：分 -->
-            <div class="time-block">
-              <span class="time-number">{{ minutes }}</span>
-              <span class="time-unit">分</span>
-            </div>
-            <span class="time-separator">:</span>
-            <!-- 数字块：秒 -->
-            <div class="time-block">
-              <span class="time-number">{{ seconds }}</span>
-              <span class="time-unit">秒</span>
-            </div>
-          </div>
-        </el-col>
-      </div>
-    </div>
-
-    <!-- 最新文章区域（完全保留原代码） -->
-    <div class="latest-articles">
-      <h2>
-        <el-icon><EditPen /></el-icon>
-        最新技术分享
-      </h2>
-      <div class="article-list">
-        <ArticleCard v-for="article in latestArticles" :key="article.id" :article="article" />
-      </div>
-      <el-button type="text" class="view-more" @click="$router.push('/blog')">
-        查看全部 <el-icon><Right /></el-icon>
-      </el-button>
-    </div>
-
-    <!-- 旅行和书籍快速入口（完全保留原代码） -->
-    <div class="quick-links">
-      <el-card class="link-card" @click="$router.push('/travel')">
-        <div class="link-content">
-          <el-icon><MapLocation /></el-icon>
-          <div>
-            <h3>旅行日记</h3>
-            <p>{{ travels.length }}篇游记 · 记录沿途风景</p>
+    <!-- 首页头部 -->
+    <section class="hero-section">
+      <div class="container">
+        <div class="profile-card">
+          <el-avatar :size="100" class="avatar">
+            <img :src="profile?.avatar" alt="个人头像" />
+          </el-avatar>
+          <h1 class="name">{{ profile?.name }}</h1>
+          <p class="intro">{{ profile?.intro }}</p>
+          <div class="contact-links">
+            <a :href="profile?.contact.github" target="_blank" class="link-item">
+              <el-icon><Github /></el-icon>
+            </a>
+            <a :href="`mailto:${profile?.contact.email}`" class="link-item">
+              <el-icon><Message /></el-icon>
+            </a>
+            <a :href="profile?.contact.blog" target="_blank" class="link-item">
+              <el-icon><Document /></el-icon>
+            </a>
           </div>
         </div>
-      </el-card>
+      </div>
+    </section>
 
-      <el-card class="link-card" @click="$router.push('/books')">
-        <div class="link-content">
-          <el-icon><Notebook /></el-icon>
-          <div>
-            <h3>读书清单</h3>
-            <p>{{ books.length }}本书 · 阅读心得分享</p>
-          </div>
+    <!-- 数据可视化区域 -->
+    <section class="charts-section">
+      <div class="container">
+        <div class="section-header">
+          <h2>学习数据统计</h2>
         </div>
-      </el-card>
+        <div class="charts-grid">
+          <!-- 学习时间图表 -->
+          <el-card class="chart-card">
+            <template #header>
+              <h3>学习时长统计（天）</h3>
+            </template>
+            <div class="chart-container">
+              <div ref="studyTimeChart" class="chart"></div>
+            </div>
+          </el-card>
+
+          <!-- 技能掌握图表 -->
+          <el-card class="chart-card">
+            <template #header>
+              <h3>技术掌握程度</h3>
+            </template>
+            <div class="chart-container">
+              <div ref="skillsChart" class="chart"></div>
+            </div>
+          </el-card>
+        </div>
+      </div>
+    </section>
+
+    <!-- 内容加载状态 -->
+    <div v-if="isLoading" class="loading-container">
+      <el-skeleton active :rows="6" class="loading-skeleton" />
     </div>
+
+    <!-- 文章列表 -->
+    <section v-else class="articles-section">
+      <div class="container">
+        <div class="section-header">
+          <h2>最新文章</h2>
+          <router-link to="/blog" class="view-all">查看全部</router-link>
+        </div>
+        <div class="articles-grid">
+          <el-card
+            v-for="article in latestArticles"
+            :key="article.id"
+            class="article-card"
+            @click="navigateToArticle(article.id)"
+            tabindex="0"
+            role="button"
+          >
+            <div class="article-header">
+              <h3 class="article-title">
+                {{ article.title }}
+              </h3>
+            </div>
+            <div class="article-content">
+              <p class="summary">{{ article.summary }}</p>
+              <div class="article-meta">
+                <span class="date">{{ formatDate(article.date) }}</span>
+                <div class="tags">
+                  <el-tag v-for="tag in article.tags" :key="tag" size="small">
+                    {{ tag }}
+                  </el-tag>
+                </div>
+              </div>
+            </div>
+          </el-card>
+        </div>
+      </div>
+    </section>
+
+    <!-- 旅行日记 -->
+    <section class="travels-section">
+      <div class="container">
+        <div class="section-header">
+          <h2>旅行记忆</h2>
+          <router-link to="/travel" class="view-all">查看全部</router-link>
+        </div>
+        <div class="travels-grid">
+          <el-card
+            v-for="travel in featuredTravels"
+            :key="travel.id"
+            class="travel-card"
+            @click="navigateToTravel(travel.id)"
+            tabindex="0"
+            role="button"
+          >
+            <img :src="travel.coverImage" alt="旅行封面" class="travel-cover" />
+            <div class="travel-info">
+              <h3 class="travel-title">
+                {{ travel.title }}
+              </h3>
+            </div>
+          </el-card>
+        </div>
+      </div>
+    </section>
   </div>
 </template>
 
 <script setup>
-import { computed, ref, onMounted, onUnmounted } from 'vue'
+import { onMounted, computed, ref, onUnmounted, nextTick } from 'vue'
 import { useDataStore } from '@/stores/useDataStore'
-import AvatarCard from '@/components/ui/AvatarCard.vue'
-import ArticleCard from '@/components/ui/ArticleCard.vue'
-import { EditPen, Right, MapLocation, Notebook } from '@element-plus/icons-vue'
+import { format, eachMonthOfInterval, parseISO } from 'date-fns'
+import { Github, Message, Document } from '@element-plus/icons-vue'
+import * as echarts from 'echarts'
+import { useRouter } from 'vue-router'
 
-// 学习时间统计核心逻辑
-const learningStartTime = ref(new Date('2021-06-15T09:00:00').getTime())
-const currentTime = ref(Date.now())
-let timer = null
+// 路由
+const router = useRouter()
 
-// 组件挂载/卸载：启动/清除定时器
-onMounted(() => {
-  timer = setInterval(() => {
-    currentTime.value = Date.now()
-  }, 1000)
-})
-onUnmounted(() => {
-  clearInterval(timer)
-})
+// 导航到文章详情
+const navigateToArticle = (id) => {
+  router.push(`/articles/${id}`)
+}
 
-// 拆分时间为单独变量（方便美化样式）
-const timeDiff = computed(() => currentTime.value - learningStartTime.value)
-const days = computed(() =>
-  String(Math.floor(timeDiff.value / (1000 * 60 * 60 * 24))).padStart(2, '0')
-)
-const hours = computed(() =>
-  String(Math.floor((timeDiff.value % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(2, '0')
-)
-const minutes = computed(() =>
-  String(Math.floor((timeDiff.value % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0')
-)
-const seconds = computed(() =>
-  String(Math.floor((timeDiff.value % (1000 * 60)) / 1000)).padStart(2, '0')
-)
+// 导航到旅行详情
+const navigateToTravel = (id) => {
+  router.push(`/travel/${id}`)
+}
 
-// 以下代码完全保留原样
+// 状态管理
 const dataStore = useDataStore()
+const isLoading = ref(true)
+
+// 图表相关
+const studyTimeChart = ref(null)
+const skillsChart = ref(null)
+const studyTimeChartInstance = ref(null)
+const skillsChartInstance = ref(null)
+
+// 数据获取
 const profile = computed(() => dataStore.profile)
 const articles = computed(() => dataStore.articles)
 const travels = computed(() => dataStore.travels)
-const books = computed(() => dataStore.books)
 
+// 处理数据
 const latestArticles = computed(() => {
-  return [...articles.value].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 3)
+  return [...(articles.value || [])].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 3)
+})
+
+const featuredTravels = computed(() => {
+  return [...(travels.value || [])].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 2)
+})
+
+// 工具函数
+const formatDate = (dateStr) => {
+  return format(new Date(dateStr), 'yyyy-MM-dd')
+}
+
+// 初始化学习时间图表 - 从2021年6月15日至今
+const initStudyTimeChart = () => {
+  if (!studyTimeChart.value) return
+
+  // 计算从开始学习到现在的时间范围
+  const startDate = parseISO('2021-06-15')
+  const endDate = new Date()
+
+  // 获取这段时间内的所有月份
+  const monthsInterval = eachMonthOfInterval({ start: startDate, end: endDate })
+  const months = monthsInterval.map((month) => format(month, 'yyyy-MM'))
+
+  // 生成每月学习天数数据（模拟，前几个月递增，中间有波动）
+  const studyDays = months.map((_, index) => {
+    // 第一个月学习较少
+    if (index === 0) return Math.floor(Math.random() * 10) + 5
+
+    // 中间月份稳步增长
+    if (index < 12) return Math.floor(Math.random() * 10) + 15 + index
+
+    // 后期保持稳定并略有波动
+    return Math.floor(Math.random() * 15) + 20
+  })
+
+  studyTimeChartInstance.value = echarts.init(studyTimeChart.value)
+  studyTimeChartInstance.value.setOption({
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'shadow'
+      }
+    },
+    grid: {
+      left: '3%',
+      right: '4%',
+      bottom: '3%',
+      containLabel: true
+    },
+    xAxis: {
+      type: 'category',
+      data: months,
+      axisLabel: {
+        rotate: 45,
+        interval: months.length > 18 ? 'auto' : 0
+      }
+    },
+    yAxis: {
+      type: 'value',
+      name: '学习天数'
+    },
+    series: [
+      {
+        name: '学习天数',
+        type: 'bar',
+        data: studyDays,
+        itemStyle: {
+          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+            { offset: 0, color: '#4158D0' },
+            { offset: 0.5, color: '#C850C0' },
+            { offset: 1, color: '#FFCC70' }
+          ])
+        },
+        animationDuration: 1500
+      }
+    ]
+  })
+}
+
+// 初始化技能图表 - 四组技术数据
+const initSkillsChart = () => {
+  if (!skillsChart.value) return
+
+  skillsChartInstance.value = echarts.init(skillsChart.value)
+  skillsChartInstance.value.setOption({
+    tooltip: {
+      trigger: 'item',
+      formatter: '{a} <br/>{b}: {c}%'
+    },
+    legend: {
+      top: '5%',
+      left: 'center'
+    },
+    radar: {
+      indicator: [
+        { name: 'HTML+CSS+JS', max: 100 },
+        { name: 'Vue3+Element+Pinia', max: 100 },
+        { name: 'ECharts', max: 100 },
+        { name: 'Node.js', max: 100 }
+      ],
+      splitArea: {
+        areaStyle: {
+          color: ['rgba(255,255,255,0.2)']
+        }
+      },
+      axisLine: {
+        lineStyle: {
+          color: 'rgba(0,0,0,0.2)'
+        }
+      }
+    },
+    series: [
+      {
+        name: '掌握程度',
+        type: 'radar',
+        symbol: 'circle',
+        symbolSize: 8,
+        lineStyle: {
+          width: 3
+        },
+        emphasis: {
+          focus: 'series'
+        },
+        data: [
+          {
+            value: [90, 85, 75, 65], // 对应四组技术的掌握程度
+            name: '当前掌握度',
+            itemStyle: {
+              color: '#3b82f6'
+            },
+            areaStyle: {
+              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                { offset: 0, color: 'rgba(59, 130, 246, 0.8)' },
+                { offset: 1, color: 'rgba(59, 130, 246, 0.2)' }
+              ])
+            }
+          }
+        ],
+        animationDuration: 2000
+      }
+    ]
+  })
+}
+
+// 处理窗口大小变化
+const handleResize = () => {
+  studyTimeChartInstance.value?.resize()
+  skillsChartInstance.value?.resize()
+}
+
+onMounted(() => {
+  // 确保数据加载完成
+  if (articles.value.length === 0) {
+    dataStore
+      .loadAllData()
+      .then(() => {
+        // 数据加载成功后更新UI
+        isLoading.value = false
+      })
+      .catch((error) => {
+        console.error('数据加载失败:', error)
+        isLoading.value = false
+        // 可以添加错误提示
+      })
+  } else {
+    isLoading.value = false
+  }
+
+  // 初始化图表
+  nextTick(() => {
+    setTimeout(() => {
+      initStudyTimeChart()
+      initSkillsChart()
+      window.addEventListener('resize', handleResize)
+    }, 500)
+  })
+})
+
+// 组件卸载时销毁图表
+onUnmounted(() => {
+  window.removeEventListener('resize', handleResize)
+  studyTimeChartInstance.value?.dispose()
+  skillsChartInstance.value?.dispose()
 })
 </script>
 
 <style scoped>
-/* 完全保留你原有的所有样式，仅新增计时器美化样式 */
 .home-container {
-  display: flex;
-  flex-direction: column;
-  gap: 30px;
-  padding: 20px;
+  padding-bottom: 60px;
 }
 
-/* 头部布局 - 三栏式分布 */
-.home-header {
-  display: flex;
-  width: 100%;
-  gap: 20px;
-  align-items: center;
-  flex-wrap: wrap; /* 响应式换行 */
-}
-
-/* 头像卡片样式 - 缩小尺寸并居左 */
-.avatar-card {
-  flex: 0 0 220px; /* 固定宽度 */
-  max-width: 220px;
-}
-
-/* 进度条区域 - 居中偏左 */
-.demo-progress {
-  flex: 1; /* 占中间大部分空间 */
-  min-width: 300px;
-  padding: 0 15px;
-}
-
-.progress-item {
-  margin-bottom: 12px;
-}
-
-.progress-label {
-  display: inline-block;
-  width: 100%;
-  margin-bottom: 5px;
-  font-size: 14px;
-  color: var(--el-text-color-secondary);
-}
-
-.demo-progress .el-progress--line {
-  margin-bottom: 15px;
-  width: 100%;
-}
-
-/* 学习时间统计 - 居右（新增美化样式） */
-.learning-time {
-  flex: 0 0 280px; /* 微调宽度适配美化后的计时器 */
+.hero-section {
+  padding: 60px 0;
   text-align: center;
-  min-width: 240px;
-  padding: 15px 10px;
+  background-color: var(--el-bg-color);
+  margin-bottom: 40px;
 }
 
-/* 计时器标题美化 */
-.time-title {
-  margin-bottom: 12px;
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--el-color-primary);
-  letter-spacing: 1px;
-  text-shadow: 0 0 8px rgba(64, 158, 255, 0.2);
+.profile-card {
+  max-width: 600px;
+  margin: 0 auto;
 }
 
-/* 计时器容器美化：渐变背景+发光边框 */
-.time-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 12px 8px;
-  background: linear-gradient(135deg, var(--el-bg-color), var(--el-bg-color-light-900));
-  border: 1px solid var(--el-border-color);
-  border-radius: 8px;
-  box-shadow: 0 0 15px rgba(64, 158, 255, 0.1), inset 0 0 5px rgba(255, 255, 255, 0.5);
+.avatar {
+  margin: 0 auto 20px;
 }
 
-/* 时间块：独立卡片样式 */
-.time-block {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 50px;
-  padding: 8px 0;
-  background: var(--el-bg-color);
-  border-radius: 6px;
-  border: 1px solid var(--el-border-color-light);
-  transition: all 0.3s ease;
+.name {
+  font-size: 2rem;
+  margin-bottom: 10px;
 }
 
-/* 鼠标悬浮时间块：轻微上浮+边框变色 */
-.time-block:hover {
-  transform: translateY(-2px);
-  border-color: var(--el-color-primary);
-  box-shadow: 0 3px 8px rgba(64, 158, 255, 0.2);
-}
-
-/* 时间数字：高亮+粗体 */
-.time-number {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--el-color-primary);
-  font-family: 'Arial', 'Microsoft YaHei', sans-serif;
-  letter-spacing: 0;
-}
-
-/* 时间单位：小字体+浅色调 */
-.time-unit {
-  font-size: 12px;
+.intro {
   color: var(--el-text-color-secondary);
-  margin-top: 2px;
+  margin-bottom: 20px;
 }
 
-/* 时间分隔符：动态闪烁效果 */
-.time-separator {
-  font-size: 18px;
-  font-weight: 700;
+.contact-links {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.link-item {
   color: var(--el-color-primary);
-  animation: blink 1s infinite;
+  font-size: 1.5rem;
+  transition: color 0.3s, transform 0.3s;
 }
 
-/* 分隔符闪烁动画 */
-@keyframes blink {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
+.link-item:hover {
+  color: var(--el-color-primary-light);
+  transform: scale(1.1);
 }
 
-/* 其他原有样式保持不变 */
-.latest-articles {
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.view-all {
+  color: var(--el-color-primary);
+  font-size: 0.9rem;
+  transition: all 0.3s;
+}
+
+.view-all:hover {
+  color: var(--el-color-primary-light);
+  transform: translateX(3px);
+}
+
+/* 图表区域样式 */
+.charts-section {
+  padding: 30px 0;
+  background-color: var(--el-bg-color);
+  margin-bottom: 40px;
+}
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+  gap: 30px;
+}
+
+.chart-card {
+  transition: all 0.3s ease;
+  height: 100%;
+}
+
+.chart-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.chart-container {
+  width: 100%;
+  height: 350px;
+  padding: 10px;
+}
+
+.chart {
+  width: 100%;
+  height: 100%;
+}
+
+.articles-grid,
+.travels-grid,
+.books-grid {
+  display: grid;
+  gap: 20px;
+}
+
+.articles-grid {
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+.travels-grid {
+  grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+}
+
+.books-grid {
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+}
+
+.article-card,
+.travel-card,
+.book-card {
+  height: 100%;
   display: flex;
   flex-direction: column;
-  gap: 15px;
-}
-
-.article-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 20px;
-}
-
-.view-more {
-  align-self: flex-end;
-}
-
-.quick-links {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
-}
-
-.link-card {
+  transition: all 0.3s ease;
   cursor: pointer;
-  transition: transform 0.3s;
+  position: relative;
+  overflow: hidden;
 }
 
-.link-card:hover {
-  transform: translateY(-5px);
+/* 卡片悬停动画效果 */
+.article-card::after,
+.travel-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transition: all 0.6s ease;
 }
 
-.link-content {
-  display: flex;
-  align-items: center;
-  gap: 15px;
+.article-card:hover,
+.travel-card:hover,
+.book-card:hover {
+  transform: translateY(-5px) scale(1.01);
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.12);
+  border-color: var(--el-color-primary-light);
+  z-index: 10;
+}
+
+.article-card:hover::after,
+.travel-card:hover::after {
+  left: 100%;
+}
+
+.article-title {
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+  transition: color 0.3s;
+}
+
+.article-card:hover .article-title {
+  color: var(--el-color-primary);
+}
+
+.loading-container {
+  max-width: 1200px;
+  margin: 0 auto;
   padding: 20px;
 }
 
-.link-content el-icon {
-  font-size: 28px;
-  color: var(--el-color-primary);
-}
-
-/* 响应式调整：适配移动端 */
+/* 响应式调整 */
 @media (max-width: 768px) {
-  .home-header {
-    flex-direction: column;
-    align-items: center;
+  .charts-grid {
+    grid-template-columns: 1fr;
   }
 
-  .avatar-card,
-  .learning-time {
-    flex: none;
-    max-width: 100%;
-    width: 100%;
+  .chart-container {
+    height: 300px;
   }
 
-  /* 移动端计时器适配 */
-  .time-container {
-    gap: 5px;
-    padding: 10px 5px;
-  }
-
-  .time-block {
-    width: 45px;
-    padding: 6px 0;
-  }
-
-  .time-number {
-    font-size: 16px;
+  .travels-grid {
+    grid-template-columns: 1fr;
   }
 }
 </style>

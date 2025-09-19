@@ -29,13 +29,16 @@
           <el-card
             v-for="item in groupedResults.文章"
             :key="item.id"
-            class="result-item"
-            @click="$router.push(`/travel/${item.id}`)"
+            class="result-item article-card"
+            @click="$router.push(`/articles/${item.id}`)"
+            tabindex="0"
+            role="button"
           >
-            <h4 class="result-title">{{ highlightKeyword(item.title) }}</h4>
-            <p class="result-excerpt">
-              {{ highlightKeyword(item.summary || item.content.substring(0, 100) + '...') }}
-            </p>
+            <h4 class="result-title" v-html="highlightKeyword(item.title)"></h4>
+            <p
+              class="result-excerpt"
+              v-html="highlightKeyword(item.summary || item.content.substring(0, 100) + '...')"
+            ></p>
             <div class="result-meta">
               <span>{{ item.date }}</span>
               <span>标签: {{ item.tags.join(', ') }}</span>
@@ -54,13 +57,16 @@
           <el-card
             v-for="item in groupedResults.旅行日记"
             :key="item.id"
-            class="result-item"
+            class="result-item article-card"
             @click="$router.push(`/travel/${item.id}`)"
+            tabindex="0"
+            role="button"
           >
-            <h4 class="result-title">{{ highlightKeyword(item.title) }}</h4>
-            <p class="result-excerpt">
-              {{ highlightKeyword(item.summary || item.content.substring(0, 100) + '...') }}
-            </p>
+            <h4 class="result-title" v-html="highlightKeyword(item.title)"></h4>
+            <p
+              class="result-excerpt"
+              v-html="highlightKeyword(item.summary || item.content.substring(0, 100) + '...')"
+            ></p>
             <div class="result-meta">
               <span>{{ item.date }}</span>
               <span>地点: {{ item.location }}</span>
@@ -76,9 +82,18 @@
         </h3>
         <el-divider />
         <div class="result-list">
-          <el-card v-for="item in groupedResults.书籍" :key="item.id" class="result-item">
-            <h4 class="result-title">{{ highlightKeyword(item.title) }}</h4>
-            <p class="result-excerpt">{{ highlightKeyword(item.review || item.notes || '') }}</p>
+          <el-card
+            v-for="item in groupedResults.书籍"
+            :key="item.id"
+            class="result-item article-card"
+            tabindex="0"
+            role="button"
+          >
+            <h4 class="result-title" v-html="highlightKeyword(item.title)"></h4>
+            <p
+              class="result-excerpt"
+              v-html="highlightKeyword(item.review || item.notes || '')"
+            ></p>
             <div class="result-meta">
               <span>作者: {{ item.author }}</span>
               <span>{{ item.status === 'finished' ? '已读完' : '阅读中' }}</span>
@@ -106,7 +121,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useDataStore } from '@/stores/useDataStore'
-// import { EditPen, MapLocation, Notebook, Search } from '@element-plus/icons-vue'
+import { EditPen, MapLocation, Notebook } from '@element-plus/icons-vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -181,6 +196,9 @@ const highlightKeyword = (text) => {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  padding: 0 20px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .search-input {
@@ -191,7 +209,7 @@ const highlightKeyword = (text) => {
 .search-stats {
   color: var(--el-text-color-secondary);
   padding: 10px 0;
-  border-bottom: 1px solid var(--el-border-color);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .search-results {
@@ -215,11 +233,7 @@ const highlightKeyword = (text) => {
 
 .result-item {
   cursor: pointer;
-  transition: all 0.3s;
-}
-
-.result-item:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
 }
 
 .result-title {
@@ -260,4 +274,6 @@ const highlightKeyword = (text) => {
   margin: 0 5px 5px 0;
   cursor: pointer;
 }
+
+/* 移除原有的hover样式，使用全局统一的卡片样式 */
 </style>

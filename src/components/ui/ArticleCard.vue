@@ -1,10 +1,8 @@
 <template>
-  <el-card class="article-card" hoverable>
+  <el-card class="article-card" hoverable @click="handleCardClick">
     <div class="article-header">
       <h3 class="article-title title" :title="article.title">
-        <router-link :to="`/article/${article.id}`" class="title-link">
-          {{ article.title }}
-        </router-link>
+        {{ article.title }}
       </h3>
       <div class="article-meta">
         <el-icon size="14"><Calendar /></el-icon>
@@ -24,7 +22,10 @@
 
 <script setup>
 import { Calendar } from '@element-plus/icons-vue'
-import { defineProps } from 'vue' // 引入defineProps
+import { defineProps } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const props = defineProps({
   article: {
@@ -34,22 +35,42 @@ const props = defineProps({
   }
 })
 
-// 使用props消除未使用警告
-console.log(props.article) // 实际项目中可删除，仅用于消除警告
+// 卡片点击事件 - 跳转到文章详情页
+const handleCardClick = () => {
+  router.push(`/articles/${props.article.id}`)
+}
 </script>
 
 <style scoped>
-/* 保持原有样式不变 */
 .article-card {
   transition: all 0.3s ease;
   height: 100%;
   display: flex;
   flex-direction: column;
+  cursor: pointer;
+  overflow: hidden;
+  position: relative;
+}
+
+.article-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
 }
 
 .article-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.article-card:hover::before {
+  transform: scaleX(1);
 }
 
 .article-header {
@@ -60,35 +81,28 @@ console.log(props.article) // 实际项目中可删除，仅用于消除警告
   margin: 0 0 8px 0;
   font-size: 18px;
   line-height: 1.4;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  transition: color 0.3s;
 }
 
-.title-link {
-  color: var(--el-text-color-primary);
-  text-decoration: none;
-  transition: color 0.2s;
-}
-
-.title-link:hover {
-  color: var(--el-color-primary);
+.article-card:hover .article-title {
+  color: #3b82f6;
 }
 
 .article-meta {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   font-size: 12px;
   color: var(--el-text-color-secondary);
+  margin-bottom: 8px;
 }
 
 .article-summary {
   flex: 1;
-  font-size: 14px;
   color: var(--el-text-color-regular);
+  font-size: 14px;
   line-height: 1.6;
-  margin-bottom: 15px;
+  margin-bottom: 16px;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
@@ -100,15 +114,13 @@ console.log(props.article) // 实际项目中可删除，仅用于消除警告
   flex-wrap: wrap;
   gap: 6px;
   margin-top: auto;
-  padding-top: 10px;
 }
 
-/* 深色模式适配 */
-:deep(.dark) .article-card {
-  --el-card-bg-color: #1a1a1a;
+.article-tags .el-tag {
+  transition: all 0.2s;
 }
 
-:deep(.dark) .title-link {
-  color: var(--el-text-color-primary);
+.article-card:hover .article-tags .el-tag {
+  transform: translateY(-2px);
 }
 </style>
