@@ -10,8 +10,8 @@
           <h1 class="name">{{ profile?.name }}</h1>
           <p class="intro">{{ profile?.intro }}</p>
           <div class="contact-links">
-            <a :href="profile?.contact.github" target="_blank" class="link-item">
-              <el-icon><Github /></el-icon>
+            <a :href="profile.contact.github" target="_blank" class="link-item">
+              <GitHubIcon size="20px" />
             </a>
             <a :href="`mailto:${profile?.contact.email}`" class="link-item">
               <el-icon><Message /></el-icon>
@@ -75,6 +75,10 @@
             tabindex="0"
             role="button"
           >
+            <!-- 新增文章封面图容器 -->
+            <div class="article-cover" v-if="article.cover">
+              <img :src="article.cover" :alt="article.title" class="cover-image" />
+            </div>
             <div class="article-header">
               <h3 class="article-title">
                 {{ article.title }}
@@ -112,11 +116,19 @@
             tabindex="0"
             role="button"
           >
-            <img :src="travel.coverImage" alt="旅行封面" class="travel-cover" />
-            <div class="travel-info">
-              <h3 class="travel-title">
-                {{ travel.title }}
-              </h3>
+            <div class="travel-card-inner">
+              <img :src="travel.coverImage" alt="旅行封面" class="travel-cover" />
+              <div class="travel-overlay">
+                <div class="travel-location">
+                  <el-icon size="16"><MapLocation /></el-icon>
+                  <span>{{ travel.location || '未知地点' }}</span>
+                </div>
+                <h3 class="travel-title">{{ travel.title }}</h3>
+                <div class="travel-date">
+                  <el-icon size="14"><Calendar /></el-icon>
+                  <span>{{ formatDate(travel.date) }}</span>
+                </div>
+              </div>
             </div>
           </el-card>
         </div>
@@ -129,9 +141,10 @@
 import { onMounted, computed, ref, onUnmounted, nextTick } from 'vue'
 import { useDataStore } from '@/stores/useDataStore'
 import { format, eachMonthOfInterval, parseISO } from 'date-fns'
-import { Github, Message, Document } from '@element-plus/icons-vue'
+import { Message, Document, MapLocation, Calendar } from '@element-plus/icons-vue'
 import * as echarts from 'echarts'
 import { useRouter } from 'vue-router'
+import GitHubIcon from '@/components/icons/GitHubIcon.vue'
 
 // 路由
 const router = useRouter()
@@ -167,7 +180,7 @@ const latestArticles = computed(() => {
 })
 
 const featuredTravels = computed(() => {
-  return [...(travels.value || [])].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 2)
+  return [...(travels.value || [])].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 3)
 })
 
 // 工具函数
@@ -411,10 +424,31 @@ onUnmounted(() => {
   margin-bottom: 30px;
 }
 
+.section-header h2 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  position: relative;
+  padding-bottom: 8px;
+}
+
+.section-header h2::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 40px;
+  height: 3px;
+  background-color: var(--el-color-primary);
+  border-radius: 3px;
+}
+
 .view-all {
   color: var(--el-color-primary);
   font-size: 0.9rem;
   transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
 .view-all:hover {
@@ -456,77 +490,208 @@ onUnmounted(() => {
   height: 100%;
 }
 
-.articles-grid,
-.travels-grid,
-.books-grid {
-  display: grid;
-  gap: 20px;
+/* 最新文章板块样式 */
+.articles-section {
+  padding: 40px 0;
+  background-color: var(--el-bg-color-page);
 }
 
 .articles-grid {
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 28px;
 }
 
-.travels-grid {
-  grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
-}
-
-.books-grid {
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-}
-
-.article-card,
-.travel-card,
-.book-card {
+.article-card {
   height: 100%;
   display: flex;
   flex-direction: column;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   cursor: pointer;
   position: relative;
   overflow: hidden;
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-/* 卡片悬停动画效果 */
-.article-card::after,
-.travel-card::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
+.article-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
+}
+
+.article-cover {
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+  border-radius: 12px 12px 0 0;
+}
+
+.cover-image {
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.1) 50%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  transition: all 0.6s ease;
+  object-fit: cover;
+  transition: transform 0.6s ease;
 }
 
-.article-card:hover,
-.travel-card:hover,
-.book-card:hover {
-  transform: translateY(-5px) scale(1.01);
-  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.12);
-  border-color: var(--el-color-primary-light);
-  z-index: 10;
+.article-card:hover .cover-image {
+  transform: scale(1.05);
 }
 
-.article-card:hover::after,
-.travel-card:hover::after {
-  left: 100%;
+.article-header {
+  padding: 20px 20px 0;
 }
 
 .article-title {
-  font-size: 1.2rem;
-  margin-bottom: 10px;
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+  line-height: 1.4;
+  color: var(--el-text-color-primary);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
   transition: color 0.3s;
 }
 
 .article-card:hover .article-title {
   color: var(--el-color-primary);
+}
+
+.article-content {
+  flex: 1;
+  padding: 0 20px 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.summary {
+  color: var(--el-text-color-secondary);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin-bottom: 16px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  flex: 1;
+}
+
+.article-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px dashed var(--el-border-color);
+}
+
+.date {
+  font-size: 0.8rem;
+  color: var(--el-text-color-placeholder);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.tags {
+  display: flex;
+  gap: 6px;
+}
+
+.el-tag {
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  background-color: var(--el-bg-color-light);
+  color: var(--el-text-color-secondary);
+  border: none;
+}
+
+/* 旅行记忆板块样式 */
+.travels-section {
+  padding: 40px 0;
+  background-color: var(--el-bg-color);
+  margin-top: 30px;
+}
+
+.travels-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 30px;
+}
+
+.travel-card {
+  height: 100%;
+  border: none;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  cursor: pointer;
+  padding: 0;
+}
+
+.travel-card-inner {
+  position: relative;
+  width: 100%;
+  height: 320px;
+  overflow: hidden;
+}
+
+.travel-cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.8s ease;
+}
+
+.travel-card:hover .travel-cover {
+  transform: scale(1.1);
+}
+
+.travel-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 24px;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.85));
+  color: white;
+  transition: all 0.4s ease;
+  transform: translateY(10px);
+  opacity: 0.9;
+}
+
+.travel-card:hover .travel-overlay {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.travel-location {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  margin-bottom: 8px;
+  opacity: 0.9;
+}
+
+.travel-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin: 0 0 12px;
+  line-height: 1.3;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.travel-date {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  opacity: 0.85;
 }
 
 .loading-container {
@@ -545,8 +710,17 @@ onUnmounted(() => {
     height: 300px;
   }
 
+  .articles-grid,
   .travels-grid {
     grid-template-columns: 1fr;
+  }
+
+  .travel-card-inner {
+    height: 280px;
+  }
+
+  .section-header h2 {
+    font-size: 1.5rem;
   }
 }
 </style>
