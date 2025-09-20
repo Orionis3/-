@@ -1,43 +1,42 @@
 export default {
   // 基础信息
   avatar: '/assets/images/avatar.jpg', // 确保该路径下存在头像图片
-  name: '张明',
-  intro: '资深前端开发工程师 | 技术博主 | 热爱探索新技术',
+  name: '熊俊杰',
+  intro: '前端开发爱好者 | 软件工程专业 | 专注前端技术学习与实践',
 
   // 个人经历
   experience: [
     {
-      period: '2023-至今',
-      title: '字节跳动 | 高级前端开发',
-      desc: '负责企业级中台Vue3项目架构设计与性能优化，主导组件库开发'
+      period: '2025-05 至 2025-08',
+      title: '江西锐锦科技有限公司 | 质检员',
+      desc: '负责产品质量检测与控制，参与生产流程优化，运用细致的观察力和严谨的逻辑思维保障产品质量，培养了良好的问题分析与解决能力'
     },
     {
-      period: '2020-2023',
-      title: '腾讯科技 | 前端开发',
-      desc: '参与微信生态相关H5应用开发，优化首屏加载速度30%+'
-    },
-    { period: '2016-2020', title: '浙江大学 | 计算机科学与技术', desc: '本科，获校级优秀毕业生' }
+      period: '2021-2025',
+      title: '江西软件职业技术大学 | 软件工程',
+      desc: '本科，专注前端开发方向学习，系统掌握HTML、CSS、JavaScript等基础技术，自主学习Vue生态并开发个人博客项目'
+    }
   ],
 
   // 擅长领域
   skills: [
+    'HTML5/CSS3',
+    'JavaScript(ES6+)',
     'Vue3',
-    'Pinia/VUEX',
-    'Element Plus/Ant Design',
-    'Node.js',
-    'Webpack/Vite',
-    'TypeScript',
-    '小程序开发'
+    'Pinia',
+    'Element Plus',
+    '前端工程化',
+    '响应式设计'
   ],
 
   // 联系方式
   contact: {
-    github: 'https://github.com/Orionis3',
+    github: 'https://github.com/Orionis3', // 可替换为你的实际GitHub地址
     email: '2933346011@qq.com',
     wechat: '/assets/images/weixin.jpg',
-    blog: 'https://blog.zhangming.com'
+    blog: 'https://blog.zhangming.com' // 可替换为你的实际博客地址
   },
 
   // 兴趣爱好
-  hobbies: ['技术分享', '马拉松', '天文摄影', '开源贡献']
+  hobbies: ['阅读书籍', '前端技术学习', '电影欣赏', '游戏体验', '技术探索']
 }

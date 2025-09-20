@@ -86,7 +86,14 @@
               <!-- 文章底部操作区 -->
               <div class="article-actions">
                 <el-button type="text" class="action-btn" @click="handleLike">
-                  <el-icon :color="isLiked ? '#36d399' : ''"><ThumbUp /></el-icon>
+                  <el-icon :color="isLiked ? '#36d399' : ''">
+                    <svg
+                      class="icon"
+                      aria-hidden="true"
+                      :style="{ color: isLiked ? '#36d399' : '' }"
+                    >
+                      <use xlink:href="#icon-xihuan"></use></svg
+                  ></el-icon>
                   <span>{{ isLiked ? '已点赞' : '点赞' }}</span>
                 </el-button>
                 <el-button type="text" class="action-btn" @click="handleShare">
@@ -251,7 +258,6 @@ import {
   Calendar,
   Eye,
   WarningFilled,
-  ThumbUp,
   Share,
   CopyDocument,
   Message,
@@ -605,11 +611,20 @@ const handleBack = () => {
   router.back()
 }
 
-// 初始化加载
+// 引入阿里矢量图标库 (在组件挂载时执行)
 onMounted(() => {
+  // 先检查是否已引入，避免重复加载
+  if (!document.getElementById('iconfont-article')) {
+    const script = document.createElement('script')
+    script.id = 'iconfont-article'
+    script.src = '//at.alicdn.com/t/c/font_5026412_y4tmvjykubq.js'
+    script.type = 'text/javascript'
+    document.head.appendChild(script)
+  }
+
+  // 原有初始化逻辑保持不变
   nextTick(() => {
     loadArticleData()
-    // 添加滚动监听
     window.addEventListener('scroll', handleScroll)
   })
 })
@@ -1217,5 +1232,19 @@ watch(
   .article-title {
     font-size: 1.5rem;
   }
+}
+.icon {
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.15em;
+  fill: currentColor; /* 关键：继承文字颜色，确保hover效果正常 */
+  overflow: hidden;
+  transition: all 0.2s; /* 保持过渡动画一致 */
+}
+
+/* 确保按钮hover时图标颜色跟随文字变化 */
+.action-btn:hover .icon {
+  color: #3b82f6 !important;
+  background-image: url('../components/icons/github-fill.svg');
 }
 </style>
