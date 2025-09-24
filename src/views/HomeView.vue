@@ -10,15 +10,15 @@
           <h1 class="name">{{ profile?.name }}</h1>
           <p class="intro">{{ profile?.intro }}</p>
           <div class="contact-links">
-            <a :href="profile.contact.github" target="_blank" class="link-item">
+            <el-link :href="profile.contact.github" target="_blank" class="link-item">
               <GitHubIcon size="20px" />
-            </a>
-            <a :href="`mailto:${profile?.contact.email}`" class="link-item">
+            </el-link>
+            <el-link @click="openEmail" class="link-item">
               <el-icon><Message /></el-icon>
-            </a>
-            <a :href="profile?.contact.blog" target="_blank" class="link-item">
+            </el-link>
+            <el-link :href="profile?.contact.blog" target="_blank" class="link-item">
               <el-icon><Document /></el-icon>
-            </a>
+            </el-link>
           </div>
         </div>
       </div>
@@ -187,7 +187,9 @@ const featuredTravels = computed(() => {
 const formatDate = (dateStr) => {
   return format(new Date(dateStr), 'yyyy-MM-dd')
 }
-
+const openEmail = () => {
+  window.location.href = `mailto:${profile.value.contact.email}`
+}
 // 初始化学习时间图表 - 从2021年6月15日至今
 const initStudyTimeChart = () => {
   if (!studyTimeChart.value) return

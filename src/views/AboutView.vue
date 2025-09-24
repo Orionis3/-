@@ -11,6 +11,7 @@
           <div class="contact-links">
             <el-link @click="openPhoto" target="_blank" class="weixin-link" />
             <el-link :href="profile.contact.github" target="_blank" class="github-link" />
+
             <el-link class="contact-link" @click="openEmail"
               ><el-icon><Message /></el-icon
             ></el-link>
