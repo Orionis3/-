@@ -13,11 +13,11 @@
 
 | 模块     | 截图                                                                                                  | 说明                                                    |
 | -------- | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
-| 首页     | ![首页展示](https://github.com/Orionis3/your-repo/blob/main/assets/screenshots/homepage.png?raw=true) | 聚合最新文章、技能雷达图、旅行记忆等核心内容            |
-| 技术博客 | ![博客页面](https://github.com/Orionis3/your-repo/blob/main/assets/screenshots/blog.png?raw=true)     | 包含 Vue3/Pinia/TypeScript 等技术实践记录，支持代码高亮 |
-| 旅行日记 | ![旅行模块](https://github.com/Orionis3/your-repo/blob/main/assets/screenshots/travel.png?raw=true)   | 记录北京、上海、厦门等 22 个城市的旅行见闻，附带照片墙  |
-| 书单推荐 | ![书单页面](https://github.com/Orionis3/your-repo/blob/main/assets/screenshots/books.png?raw=true)    | 涵盖心理学、理财、文学等多领域书籍，含标签分类与读后感  |
-| 全局搜索 | ![搜索功能](https://github.com/Orionis3/your-repo/blob/main/assets/screenshots/search.gif?raw=true)   | 支持关键词匹配标题、内容、标签，实时返回跨模块结果      |
+| 首页     | ![首页展示](https://github.com/Orionis3/blog/tree/main/public/assets/images/shoye) | 聚合最新文章、技能雷达图、旅行记忆等核心内容            |
+| 技术博客 | ![博客页面](https://github.com/Orionis3/blog/tree/main/public/assets/images/jishu)     | 包含 Vue3/Pinia/TypeScript 等技术实践记录，支持代码高亮 |
+| 旅行日记 | ![旅行模块](https://github.com/Orionis3/blog/tree/main/public/assets/images/lvxing)   | 记录北京、上海、厦门等 22 个城市的旅行见闻，附带照片墙  |
+| 书单推荐 | ![书单页面](https://github.com/Orionis3/blog/tree/main/public/assets/images/shudan)    | 涵盖心理学、理财、文学等多领域书籍，含标签分类与读后感  |
+| 全局搜索 | ![搜索功能](https://github.com/Orionis3/blog/tree/main/public/assets/images/quanju)   | 支持关键词匹配标题、内容、标签，实时返回跨模块结果      |
 
 ## 🛠️ 技术栈
 
