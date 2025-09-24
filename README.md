@@ -1,35 +1,45 @@
-src/
-├── views/ # 页面级组件（对应路由）
-│ ├── HomeView.vue # 首页
-│ ├── AboutView.vue # 关于页
-│ ├── BlogView.vue # 博客列表页
-│ ├── ArticleView.vue # 文章详情页
-│ ├── TravelView.vue # 旅行日记页
-│ ├── BooksView.vue # 书单页
-│ └── SearchView.vue # 搜索结果页
-├── components/ # 可复用组件
-│ ├── layout/ # 布局组件
-│ │ ├── MainHeader.vue # 顶部导航栏（含搜索、深色模式）
-│ │ ├── MainFooter.vue # 页脚
-│ │ └── AppLayout.vue # 全局布局容器（整合 header/footer）
-│ ├── ui/ # 功能组件
-│ │ ├── AvatarCard.vue # 个人信息卡片
-│ │ ├── RotateMenu.vue # 旋转菜单转盘
-│ │ ├── BackToTop.vue # 返回顶部按钮
-│ │ └── ArticleCard.vue # 文章卡片组件
-├── router/
-│ └── index.js # 路由配置
-├── stores/ # Pinia 状态管理（替代 Vuex）
-│ ├── index.js # 导出创建好的 pinia 实例
-│ ├── useAppStore.js # 应用状态（深色模式、搜索等）
-│ └── useDataStore.js # 数据管理（文章、书籍等本地数据）
-├── assets/ # 静态资源
-│ ├── images/ # 头像、配图等（放一张 avatar.jpg 作为头像）
-│ └── styles/ # 样式文件
-│ └── global.css # 全局样式（含深色模式）
-├── data/ # 本地数据（替代后端）
-│ ├── profile.js # 个人信息
-│ ├── articles.js # 博客文章
-│ ├── books.js # 书单数据
-│ └── travels.js # 旅行日记
-└── main.js # 入口文件（配置 Element Plus、Pinia 等）
+# 个人博客系统（Vue3 + Pinia）
+
+一个融合「技术分享、生活记录与知识管理」的多功能个人主页，基于 Vue3 生态开发，既展示前端技术实践，又作为个人成长的数字化载体。
+
+## 🌟 项目特色
+
+- **多模块内容聚合**：包含技术博客（前端开发踩坑记录）、旅行日记（22 篇城市游记）、书单推荐（22 本精选书籍及读后感）三大核心模块，通过全局搜索实现跨内容联动。
+- **工程化实践**：采用 Vue3 组合式 API（`<script setup>`）、Pinia 状态管理、组件化设计（封装导航栏、内容卡片等 10+可复用组件），符合现代前端开发规范。
+- **用户体验优化**：支持深色/浅色模式切换、响应式布局（适配移动端与桌面端）、卡片悬停动画等细节交互，提升浏览体验。
+- **数据本地化方案**：通过 JSON 文件模拟后端数据，降低开发门槛，便于后续对接真实接口。
+
+## 📸 功能展示
+
+| 模块     | 截图                                                                                                  | 说明                                                    |
+| -------- | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| 首页     | ![首页展示](https://github.com/Orionis3/your-repo/blob/main/assets/screenshots/homepage.png?raw=true) | 聚合最新文章、技能雷达图、旅行记忆等核心内容            |
+| 技术博客 | ![博客页面](https://github.com/Orionis3/your-repo/blob/main/assets/screenshots/blog.png?raw=true)     | 包含 Vue3/Pinia/TypeScript 等技术实践记录，支持代码高亮 |
+| 旅行日记 | ![旅行模块](https://github.com/Orionis3/your-repo/blob/main/assets/screenshots/travel.png?raw=true)   | 记录北京、上海、厦门等 22 个城市的旅行见闻，附带照片墙  |
+| 书单推荐 | ![书单页面](https://github.com/Orionis3/your-repo/blob/main/assets/screenshots/books.png?raw=true)    | 涵盖心理学、理财、文学等多领域书籍，含标签分类与读后感  |
+| 全局搜索 | ![搜索功能](https://github.com/Orionis3/your-repo/blob/main/assets/screenshots/search.gif?raw=true)   | 支持关键词匹配标题、内容、标签，实时返回跨模块结果      |
+
+## 🛠️ 技术栈
+
+- **核心框架**：Vue3（组合式 API）
+- **状态管理**：Pinia（替代 Vuex，简化状态逻辑）
+- **UI 组件**：Element Plus（二次封装，保证风格统一）
+- **路由管理**：Vue Router（实现页面无刷新跳转）
+- **构建工具**：Vite（快速热更新，提升开发效率）
+- **数据可视化**：ECharts（技能雷达图展示）
+
+## 🚀 本地运行
+
+```bash
+# 克隆仓库
+git clone https://github.com/Orionis3/your-repo.git
+
+# 安装依赖
+npm install
+
+# 启动开发服务器（默认端口5173）
+npm run dev
+
+# 构建生产版本
+npm run build
+```
