@@ -52,7 +52,9 @@ src/
 ├── views/           # 页面组件（首页、博客、旅行等7个核心页面）
 
 ├── components/      # 可复用组件（导航栏、文章卡片、搜索框等）
+
 ├── data/            # 本地数据（articles.js/books.js/travels.js等）
+
 ├── stores/          # Pinia状态管理（主题切换、搜索状态等）
 
 ├── router/          # 路由配置
