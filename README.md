@@ -28,10 +28,10 @@
 - **构建工具**：Vue CLI（基于 Webpack，通过 vue.config.js 配置开发环境，package.json 中包含 @vue/cli-service 等依赖）
 - **数据可视化**：ECharts（用于技能雷达图等数据展示，package.json 中已引入）
 - **其他工具**：代码规范：ESLint + Prettier（保证代码风格一致）
-
-                语法高亮：highlight.js（用于博客文章代码块展示）
-
-                日期处理：date-fns（处理文章、旅行日记的日期格式化）
+- 
+              - 语法高亮：highlight.js（用于博客文章代码块展示）
+  
+              - 日期处理：date-fns（处理文章、旅行日记的日期格式化）
 
 ## 🚀 本地运行
 
