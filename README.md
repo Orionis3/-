@@ -21,15 +21,17 @@
 
 ## 🛠️ 技术栈
 
-- **核心框架**：Vue3（组合式 API）
-- **状态管理**：Pinia（替代 Vuex，简化状态逻辑）
-- **UI 组件**：Element Plus（二次封装，保证风格统一）
-- **路由管理**：Vue Router（实现页面无刷新跳转）
-- **构建工具**：Vite（快速热更新，提升开发效率）
-- **数据可视化**：ECharts（技能雷达图展示）
+- **核心框架**：Vue 3（采用组合式 API 开发）
+- **状态管理**：Pinia（替代 Vuex，简化状态逻辑，如 stores/ 目录下的状态管理）
+- **UI 组件**：Element Plus（全局注册并二次封装，保证风格统一，见 main.js 中的配置）
+- **路由管理**：Vue Router 4（实现页面无刷新跳转，router/index.js 配置路由规则）
+- **构建工具**：Vue CLI（基于 Webpack，通过 vue.config.js 配置开发环境，package.json 中包含 @vue/cli-service 等依赖）
+- **数据可视化**：ECharts（用于技能雷达图等数据展示，package.json 中已引入）
+- **其他工具**：代码规范：ESLint + Prettier（保证代码风格一致）
+                语法高亮：highlight.js（用于博客文章代码块展示）
+                日期处理：date-fns（处理文章、旅行日记的日期格式化）
 
 ## 🚀 本地运行
-
 
 ```bash
 # 克隆仓库
